@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-ralp-list-conversations"
+description = "Enables the ralp_list_conversations command without any pre-configured scope."
+commands.allow = ["ralp_list_conversations"]
+
+[[permission]]
+identifier = "deny-ralp-list-conversations"
+description = "Denies the ralp_list_conversations command without any pre-configured scope."
+commands.deny = ["ralp_list_conversations"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-ralp-stop-generation"
+description = "Enables the ralp_stop_generation command without any pre-configured scope."
+commands.allow = ["ralp_stop_generation"]
+
+[[permission]]
+identifier = "deny-ralp-stop-generation"
+description = "Denies the ralp_stop_generation command without any pre-configured scope."
+commands.deny = ["ralp_stop_generation"]

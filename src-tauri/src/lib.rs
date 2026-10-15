@@ -1,0 +1,82 @@
+mod activity;
+mod auth;
+mod commands;
+mod conversations;
+mod db;
+mod error;
+mod ralp;
+mod session;
+mod system_info;
+
+use std::sync::{Mutex, MutexGuard};
+
+use rusqlite::Connection;
+use tauri::Manager;
+
+pub struct AppState {
+  db: Mutex<Connection>,
+  session: session::Session,
+  monitor: system_info::SystemMonitor,
+  ralp: ralp::Ralp,
+}
+
+impl AppState {
+  fn db(&self) -> MutexGuard<'_, Connection> {
+    self.db.lock().unwrap_or_else(|e| e.into_inner())
+  }
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+  tauri::Builder::default()
+    .plugin(tauri_plugin_dialog::init())
+    .setup(|app| {
+      if cfg!(debug_assertions) {
+        app.handle().plugin(
+          tauri_plugin_log::Builder::default()
+            .level(log::LevelFilter::Info)
+            .build(),
+        )?;
+      }
+
+      let data_dir = app.path().app_data_dir()?;
+      std::fs::create_dir_all(&data_dir)?;
+      let db_path = data_dir.join(db::DATABASE_FILE);
+      let conn = db::open(&db_path).map_err(|e| format!("failed to open database at {}: {e:?}", db_path.display()))?;
+      log::info!("database ready at {}", db_path.display());
+
+      app.manage(AppState {
+        db: Mutex::new(conn),
+        session: session::Session::default(),
+        monitor: system_info::SystemMonitor::new(),
+        ralp: ralp::Ralp::new(ralp::Locations::resolve(app.handle())?),
+      });
+      Ok(())
+    })
+    .invoke_handler(tauri::generate_handler![
+      commands::get_session,
+      commands::login,
+      commands::logout,
+      commands::change_password,
+      commands::get_system_overview,
+      commands::get_recent_activity,
+      commands::get_system_status,
+      commands::ralp_status,
+      commands::ralp_start,
+      commands::ralp_import_model,
+      commands::ralp_list_conversations,
+      commands::ralp_get_messages,
+      commands::ralp_delete_conversation,
+      commands::ralp_send_message,
+      commands::ralp_stop_generation,
+    ])
+    .build(tauri::generate_context!())
+    .expect("error while building tauri application")
+    .run(|app, event| {
+      if let tauri::RunEvent::Exit = event {
+        if let Some(state) = app.try_state::<AppState>() {
+          state.ralp.shutdown();
+        }
+      }
+    });
+}

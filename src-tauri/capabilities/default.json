@@ -1,0 +1,26 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Core window APIs plus the VocaTechX backend commands, for the main window only",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "allow-get-session",
+    "allow-login",
+    "allow-logout",
+    "allow-change-password",
+    "allow-get-system-overview",
+    "allow-get-recent-activity",
+    "allow-get-system-status",
+    "allow-ralp-status",
+    "allow-ralp-start",
+    "allow-ralp-import-model",
+    "allow-ralp-list-conversations",
+    "allow-ralp-get-messages",
+    "allow-ralp-delete-conversation",
+    "allow-ralp-send-message",
+    "allow-ralp-stop-generation"
+  ]
+}
