@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-performance-test"
+description = "Enables the net_performance_test command without any pre-configured scope."
+commands.allow = ["net_performance_test"]
+
+[[permission]]
+identifier = "deny-net-performance-test"
+description = "Denies the net_performance_test command without any pre-configured scope."
+commands.deny = ["net_performance_test"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-health"
+description = "Enables the net_health command without any pre-configured scope."
+commands.allow = ["net_health"]
+
+[[permission]]
+identifier = "deny-net-health"
+description = "Denies the net_health command without any pre-configured scope."
+commands.deny = ["net_health"]

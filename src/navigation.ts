@@ -35,7 +35,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, description: "Overview of this computer and your recent work.", available: true },
   { id: "ai-troubleshooter", label: "AI Troubleshooter", icon: Bot, description: "Chat with Ralp, your offline AI troubleshooting assistant.", available: true },
-  { id: "network-center", label: "Network Center", icon: Network, description: "Diagnose adapters, connectivity, DNS, and IP configuration.", available: false },
+  { id: "network-center", label: "Network Center", icon: Network, description: "Diagnose adapters, connectivity, DNS, and IP configuration.", available: true },
   { id: "printer-devices", label: "Printer & Devices", icon: Printer, description: "Inspect printers, drivers, and connected hardware.", available: false },
   { id: "windows-repair", label: "Windows Repair", icon: Wrench, description: "Run guided Windows maintenance and repair operations.", available: false },
   { id: "software-center", label: "Software Center", icon: Package, description: "Manage installers and essential technician software.", available: false },

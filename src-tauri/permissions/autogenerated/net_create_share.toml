@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-create-share"
+description = "Enables the net_create_share command without any pre-configured scope."
+commands.allow = ["net_create_share"]
+
+[[permission]]
+identifier = "deny-net-create-share"
+description = "Denies the net_create_share command without any pre-configured scope."
+commands.deny = ["net_create_share"]

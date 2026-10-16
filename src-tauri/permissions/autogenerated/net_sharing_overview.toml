@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-sharing-overview"
+description = "Enables the net_sharing_overview command without any pre-configured scope."
+commands.allow = ["net_sharing_overview"]
+
+[[permission]]
+identifier = "deny-net-sharing-overview"
+description = "Denies the net_sharing_overview command without any pre-configured scope."
+commands.deny = ["net_sharing_overview"]

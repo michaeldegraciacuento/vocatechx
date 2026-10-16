@@ -6,6 +6,7 @@ import { navItem, type PageId } from "../navigation";
 import ActivityLogsPage from "../pages/ActivityLogsPage";
 import AiTroubleshooterPage from "../pages/AiTroubleshooterPage";
 import DashboardPage from "../pages/DashboardPage";
+import NetworkCenterPage from "../pages/NetworkCenterPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
 
 /** Shell for every protected page. Only rendered for an active session (see App). */
@@ -23,6 +24,9 @@ function AppLayout() {
       break;
     case "ai-troubleshooter":
       content = <AiTroubleshooterPage />;
+      break;
+    case "network-center":
+      content = <NetworkCenterPage />;
       break;
     case "activity-logs":
       content = <ActivityLogsPage />;

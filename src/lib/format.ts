@@ -40,3 +40,16 @@ export function humanizeIdentifier(value: string): string {
     .replace(/\bai\b/gi, "AI")
     .replace(/^\w/, (c) => c.toUpperCase());
 }
+
+/** A link speed in bits per second, e.g. "867 Mbps". */
+export function formatBps(bps: number | null | undefined): string | null {
+  if (!bps) return null;
+  if (bps >= 1e9) return `${(bps / 1e9).toFixed(bps % 1e9 === 0 ? 0 : 1)} Gbps`;
+  if (bps >= 1e6) return `${Math.round(bps / 1e6)} Mbps`;
+  if (bps >= 1e3) return `${Math.round(bps / 1e3)} Kbps`;
+  return `${bps} bps`;
+}
+
+export function formatMs(ms: number | null | undefined, digits = 0): string | null {
+  return ms === null || ms === undefined ? null : `${ms.toFixed(digits)} ms`;
+}

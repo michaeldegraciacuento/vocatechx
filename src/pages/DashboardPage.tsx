@@ -131,7 +131,7 @@ function DashboardPage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
       </Section>
 
       <div className="grid gap-5 lg:grid-cols-3">
-        <section className={`${cardClass} lg:col-span-2`}>
+        <section className={`${cardClass} min-w-0 lg:col-span-2`}>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="m-0 text-sm font-bold text-[#172033]">Recent Activity</h2>
             {activity.data && activity.data.length > 0 && (
@@ -147,7 +147,7 @@ function DashboardPage({ onNavigate }: { onNavigate: (page: PageId) => void }) {
           <ActivityList items={activity.data} loading={activity.loading} error={activity.error} />
         </section>
 
-        <section className={cardClass}>
+        <section className={`${cardClass} min-w-0`}>
           <h2 className="m-0 mb-4 text-sm font-bold text-[#172033]">System Status</h2>
           <SystemStatusPanel status={status.data} error={status.error} user={user} />
         </section>

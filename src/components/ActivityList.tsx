@@ -45,12 +45,18 @@ export function ActivityList({ items, loading, error }: ActivityListProps) {
   }
 
   return (
-    <ul className="m-0 grid list-none gap-1 p-0">
+    // grid-cols-1 (minmax(0, 1fr)) keeps long titles/summaries from widening the
+    // column past the card, so `truncate` can take effect.
+    <ul className="m-0 grid min-w-0 list-none grid-cols-1 gap-1 p-0">
       {items.map((item) => {
         const status = STATUS_STYLES[item.status];
         const Icon = status.icon;
         return (
-          <li key={item.id} className="flex items-center gap-3 rounded-[10px] px-2 py-2.5 hover:bg-[#f7f9fc]">
+          <li
+            key={item.id}
+            className="flex min-w-0 items-center gap-3 rounded-[10px] px-2 py-2.5 hover:bg-[#f7f9fc]"
+            title={item.summary ? `${item.title}\n${item.summary}` : item.title}
+          >
             <span className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-[9px] ${status.className}`}>
               <Icon size={16} className={item.status === "running" ? "animate-spin" : ""} />
             </span>

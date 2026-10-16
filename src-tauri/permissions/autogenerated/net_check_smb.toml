@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-check-smb"
+description = "Enables the net_check_smb command without any pre-configured scope."
+commands.allow = ["net_check_smb"]
+
+[[permission]]
+identifier = "deny-net-check-smb"
+description = "Denies the net_check_smb command without any pre-configured scope."
+commands.deny = ["net_check_smb"]

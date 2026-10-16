@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::error::AppResult;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActivityItem {
   pub id: i64,

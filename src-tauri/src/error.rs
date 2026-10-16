@@ -23,6 +23,10 @@ pub enum AppError {
   #[error("{0}")]
   Ai(String),
 
+  /// A Network Center operation that could not run, described for the user.
+  #[error("{0}")]
+  Network(String),
+
   #[error("A database error occurred. Please restart VocaTechX and try again.")]
   Database(#[from] rusqlite::Error),
 
@@ -43,6 +47,7 @@ impl AppError {
       Self::PasswordChangeRequired => "password_change_required",
       Self::Validation(_) => "validation",
       Self::Ai(_) => "ai",
+      Self::Network(_) => "network",
       Self::Database(_) => "database",
       Self::Internal(_) => "internal",
     }

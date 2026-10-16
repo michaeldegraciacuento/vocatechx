@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-run-diagnostics"
+description = "Enables the net_run_diagnostics command without any pre-configured scope."
+commands.allow = ["net_run_diagnostics"]
+
+[[permission]]
+identifier = "deny-net-run-diagnostics"
+description = "Denies the net_run_diagnostics command without any pre-configured scope."
+commands.deny = ["net_run_diagnostics"]

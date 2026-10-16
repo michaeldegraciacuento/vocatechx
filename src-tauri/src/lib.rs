@@ -4,6 +4,7 @@ mod commands;
 mod conversations;
 mod db;
 mod error;
+mod network;
 mod ralp;
 mod session;
 mod system_info;
@@ -69,6 +70,26 @@ pub fn run() {
       commands::ralp_delete_conversation,
       commands::ralp_send_message,
       commands::ralp_stop_generation,
+      commands::net_health,
+      commands::net_adapters,
+      commands::net_run_diagnostics,
+      commands::net_dns_lookup,
+      commands::net_repair,
+      commands::net_open_settings,
+      commands::net_performance_test,
+      commands::net_sharing_overview,
+      commands::net_discover_computers,
+      commands::net_list_shares,
+      commands::net_check_smb,
+      commands::net_test_share_access,
+      commands::net_open_share,
+      commands::net_pick_folder,
+      commands::net_create_share,
+      commands::net_remove_share,
+      commands::net_wifi_password,
+      commands::net_history,
+      commands::net_report,
+      commands::net_export_report,
     ])
     .build(tauri::generate_context!())
     .expect("error while building tauri application")

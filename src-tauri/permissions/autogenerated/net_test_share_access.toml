@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-test-share-access"
+description = "Enables the net_test_share_access command without any pre-configured scope."
+commands.allow = ["net_test_share_access"]
+
+[[permission]]
+identifier = "deny-net-test-share-access"
+description = "Denies the net_test_share_access command without any pre-configured scope."
+commands.deny = ["net_test_share_access"]

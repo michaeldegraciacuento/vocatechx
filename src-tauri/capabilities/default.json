@@ -21,6 +21,26 @@
     "allow-ralp-get-messages",
     "allow-ralp-delete-conversation",
     "allow-ralp-send-message",
-    "allow-ralp-stop-generation"
+    "allow-ralp-stop-generation",
+    "allow-net-health",
+    "allow-net-adapters",
+    "allow-net-run-diagnostics",
+    "allow-net-dns-lookup",
+    "allow-net-repair",
+    "allow-net-open-settings",
+    "allow-net-performance-test",
+    "allow-net-sharing-overview",
+    "allow-net-discover-computers",
+    "allow-net-list-shares",
+    "allow-net-check-smb",
+    "allow-net-test-share-access",
+    "allow-net-open-share",
+    "allow-net-pick-folder",
+    "allow-net-create-share",
+    "allow-net-remove-share",
+    "allow-net-history",
+    "allow-net-report",
+    "allow-net-export-report",
+    "allow-net-wifi-password"
   ]
 }

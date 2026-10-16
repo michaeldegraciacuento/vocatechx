@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-net-repair"
+description = "Enables the net_repair command without any pre-configured scope."
+commands.allow = ["net_repair"]
+
+[[permission]]
+identifier = "deny-net-repair"
+description = "Denies the net_repair command without any pre-configured scope."
+commands.deny = ["net_repair"]

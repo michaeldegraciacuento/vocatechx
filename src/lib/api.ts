@@ -14,6 +14,7 @@ export type AppErrorCode =
   | "password_change_required"
   | "validation"
   | "ai"
+  | "network"
   | "database"
   | "internal";
 
@@ -92,6 +93,185 @@ export type SystemStatus = {
   networkRequired: boolean;
 };
 
+// ---------------------------------------------------------------------------
+// Network Center
+
+export type AdapterKind = "ethernet" | "wifi" | "virtual" | "other";
+export type AdapterStatus = "connected" | "disconnected" | "disabled";
+export type IpEntry = { address: string; prefixLength: number };
+
+export type NetworkAdapter = {
+  id: string;
+  name: string;
+  description: string;
+  kind: AdapterKind;
+  status: AdapterStatus;
+  mac: string | null;
+  ipv4: IpEntry[];
+  ipv6: IpEntry[];
+  gateways: string[];
+  dnsServers: string[];
+  dhcpEnabled: boolean | null;
+  dhcpServer: string | null;
+  /** Negotiated adapter link speed, not internet throughput. */
+  linkSpeedBps: number | null;
+  mtu: number | null;
+  dnsSuffix: string | null;
+  isPrimary: boolean;
+  apipa: boolean;
+};
+
+export type NetworkHealth = {
+  status: "connected" | "limited" | "disconnected";
+  summary: string;
+  adapter: NetworkAdapter | null;
+  wifiSsid: string | null;
+  internet: {
+    reachable: boolean;
+    latencyMs: number | null;
+    dnsResolves: boolean;
+    dnsMs: number | null;
+    detail: string;
+  };
+  computerName: string | null;
+  checkedAt: number;
+};
+
+export type StepStatus = "pass" | "warn" | "fail" | "skip";
+
+export type TestStep = {
+  id: string;
+  title: string;
+  status: StepStatus;
+  detail: string;
+  hint: string | null;
+  durationMs: number;
+};
+
+export type RepairAction = "flush_dns" | "renew_dhcp" | "reset_winsock" | "reset_tcpip" | "start_sharing_services";
+export type RepairStatus = "success" | "partial" | "failed" | "cancelled";
+
+export type DiagnosticReport = {
+  runId: number | null;
+  steps: TestStep[];
+  healthy: boolean;
+  failurePoint: string | null;
+  summary: string;
+  recommendedRepairs: RepairAction[];
+  adapterName: string | null;
+};
+
+export type DnsServerResult = {
+  /** "system" for the Windows resolver, otherwise the server IP. */
+  server: string;
+  addresses: string[];
+  aliases: string[];
+  elapsedMs: number | null;
+  error: string | null;
+};
+
+export type DnsComparison = { runId: number | null; domain: string; results: DnsServerResult[]; consistent: boolean };
+
+export type RepairOutcome = {
+  runId: number | null;
+  action: RepairAction;
+  title: string;
+  status: RepairStatus;
+  message: string;
+  output: string | null;
+  restartRequired: boolean;
+};
+
+export type SettingsPage = "network_status" | "wifi_settings" | "network_connections" | "advanced_sharing";
+
+export type PingStats = {
+  target: string;
+  address: string;
+  sent: number;
+  received: number;
+  lossPercent: number;
+  minMs: number | null;
+  maxMs: number | null;
+  avgMs: number | null;
+  jitterMs: number | null;
+  samples: (number | null)[];
+  lastError: string | null;
+};
+
+export type PerformanceResult = {
+  runId: number | null;
+  gateway: PingStats | null;
+  internet: PingStats;
+  adapterName: string | null;
+  connectionType: AdapterKind | null;
+  linkSpeedBps: number | null;
+  quality: "Good" | "Fair" | "Poor" | "Unreachable";
+  assessment: string;
+};
+
+export type NetError = { code: number; title: string; explanation: string; hint: string };
+export type Listing<T> = { items: T[]; error: NetError | null };
+
+export type Share = {
+  name: string;
+  kind: "folder" | "printer" | "device" | "ipc" | "other";
+  special: boolean;
+  remark: string | null;
+  path: string | null;
+  currentUses: number | null;
+  unc: string;
+};
+
+export type SmbSession = { client: string; user: string; activeSeconds: number; idleSeconds: number };
+export type SmbConnection = { local: string | null; remote: string; status: string };
+
+export type DiscoveryStatus = {
+  profiles: { name: string; interfaceAlias: string; category: string }[];
+  networkDiscovery: { total: number; enabled: number };
+  fileSharing: { total: number; enabled: number };
+  services: { name: string; displayName: string; status: string; startType: string }[];
+};
+
+export type SharingOverview = {
+  computerName: string | null;
+  localShares: Listing<Share>;
+  sessions: Listing<SmbSession>;
+  connections: Listing<SmbConnection>;
+  discovery: DiscoveryStatus | null;
+  discoveryError: string | null;
+  smbServerListening: boolean;
+  elevated: boolean;
+};
+
+export type DiscoveredComputer = {
+  name: string | null;
+  address: string | null;
+  mac: string | null;
+  source: "browse_list" | "neighbor";
+  smbOpen: boolean;
+};
+
+export type Discovery = { computers: DiscoveredComputer[]; browseError: NetError | null };
+export type ShareListing = { host: string; shares: Share[]; error: NetError | null };
+export type SmbCheck = { runId: number | null; host: string; steps: TestStep[]; healthy: boolean; summary: string; shares: Share[] };
+export type AccessResult = { path: string; ok: boolean; entries: number | null; error: NetError | null };
+export type WifiPassword = {
+  ssid: string;
+  profile: string;
+  /** Windows' authentication name, e.g. WPA2PSK, WPA3SAE or open. */
+  authentication: string;
+  /** null for open networks. */
+  password: string | null;
+};
+
+export type ShareChange = { runId: number | null; status: RepairStatus; message: string };
+
+export type ReportDetail = {
+  run: ActivityItem;
+  username: string | null;
+  logs: { level: "info" | "warning" | "error"; message: string }[];
+};
+
 export function isAppError(error: unknown): error is AppError {
   return typeof error === "object" && error !== null && "code" in error && "message" in error;
 }
@@ -128,4 +308,29 @@ export const api = {
     return invoke<void>("ralp_send_message", { conversationId, message, onEvent: channel });
   },
   ralpStopGeneration: () => invoke<void>("ralp_stop_generation"),
+
+  netHealth: () => invoke<NetworkHealth>("net_health"),
+  netAdapters: () => invoke<NetworkAdapter[]>("net_adapters"),
+  netRunDiagnostics: () => invoke<DiagnosticReport>("net_run_diagnostics"),
+  netDnsLookup: (domain: string, servers: string[]) => invoke<DnsComparison>("net_dns_lookup", { domain, servers }),
+  netRepair: (action: RepairAction) => invoke<RepairOutcome>("net_repair", { action }),
+  netOpenSettings: (page: SettingsPage) => invoke<void>("net_open_settings", { page }),
+  netPerformanceTest: (target: string, count: number) => invoke<PerformanceResult>("net_performance_test", { target, count }),
+  netSharingOverview: () => invoke<SharingOverview>("net_sharing_overview"),
+  netDiscoverComputers: () => invoke<Discovery>("net_discover_computers"),
+  netListShares: (host: string) => invoke<ShareListing>("net_list_shares", { host }),
+  netCheckSmb: (host: string) => invoke<SmbCheck>("net_check_smb", { host }),
+  netTestShareAccess: (path: string) => invoke<AccessResult>("net_test_share_access", { path }),
+  netOpenShare: (path: string) => invoke<void>("net_open_share", { path }),
+  netPickFolder: () => invoke<string | null>("net_pick_folder"),
+  netCreateShare: (name: string, path: string, access: "read" | "change") =>
+    invoke<ShareChange>("net_create_share", { name, path, access }),
+  netRemoveShare: (name: string) => invoke<ShareChange>("net_remove_share", { name }),
+  /** null if the administrator prompt was declined. */
+  netWifiPassword: (adapterId: string) => invoke<WifiPassword | null>("net_wifi_password", { adapterId }),
+  netHistory: (limit?: number) => invoke<ActivityItem[]>("net_history", { limit }),
+  netReport: (runId: number) => invoke<ReportDetail>("net_report", { runId }),
+  /** Returns the saved path, or null if the save dialog was cancelled. */
+  netExportReport: (runId: number, format: "txt" | "pdf") =>
+    invoke<string | null>("net_export_report", { runId, format, utcOffsetMinutes: -new Date().getTimezoneOffset() }),
 };
