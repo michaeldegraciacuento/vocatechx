@@ -237,7 +237,7 @@ $result = [ordered]@{
 ConvertTo-Json -InputObject $result -Depth 4 -Compress
 "#;
 
-fn discovery_status() -> Result<DiscoveryStatus, String> {
+pub(crate) fn discovery_status() -> Result<DiscoveryStatus, String> {
   let output = process::powershell(DISCOVERY_SCRIPT, Duration::from_secs(45))?;
   if !output.success() {
     return Err(format!("Could not read the sharing settings: {}", output.text()));

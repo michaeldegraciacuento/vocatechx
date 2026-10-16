@@ -58,7 +58,12 @@ function SharingStatus({
   const running = (name: string) => (service(name) ? service(name)!.status === "Running" : null);
   const ruleOn = (r: { total: number; enabled: number } | undefined) => (!r || r.total === 0 ? null : r.enabled > 0);
   const publicProfile = d?.profiles.some((p) => p.category === "Public") ?? false;
-  const servicesStopped = running("LanmanWorkstation") === false || running("LanmanServer") === false;
+  const sharingIncomplete =
+    running("LanmanWorkstation") === false ||
+    running("LanmanServer") === false ||
+    ruleOn(d?.fileSharing) === false ||
+    ruleOn(d?.networkDiscovery) === false ||
+    overview.smbServerListening === false;
 
   const rows = [
     statusRow(
@@ -106,9 +111,9 @@ function SharingStatus({
           </li>
         ))}
       </ul>
-      {servicesStopped && (
+      {sharingIncomplete && (
         <button type="button" className={`${buttonClass} mt-4`} onClick={() => onRepair("start_sharing_services")}>
-          Start file sharing services…
+          Turn on file sharing &amp; network discovery…
         </button>
       )}
     </Panel>

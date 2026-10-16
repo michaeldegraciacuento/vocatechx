@@ -52,10 +52,10 @@ export const REPAIRS: RepairInfo[] = [
   },
   {
     action: "start_sharing_services",
-    title: "Start file sharing services",
-    fixes: "Shared folders cannot be opened or offered because the Workstation or Server service is stopped.",
+    title: "Turn on file sharing & network discovery",
+    fixes: "This computer cannot see or be seen by others, or cannot open/offer shared folders, because File and printer sharing or Network discovery is off or a sharing service is stopped.",
     effect:
-      "Sets the Workstation and Server services to start automatically and starts them now. If the Workstation service's registry registration is damaged (ServiceDll missing), it is restored to the Windows default first.",
+      "Sets the Workstation, Server and discovery services to start automatically and starts them, and turns on the File and Printer Sharing and Network Discovery firewall rules for the current network. If the Workstation service's registry registration is damaged (ServiceDll missing), it is restored to the Windows default first.",
     admin: true,
     restart: false,
     impact: "medium",

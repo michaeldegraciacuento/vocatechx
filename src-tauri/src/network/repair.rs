@@ -31,7 +31,7 @@ impl RepairAction {
       Self::RenewDhcp => "Renew DHCP IP address",
       Self::ResetWinsock => "Reset Winsock",
       Self::ResetTcpip => "Reset TCP/IP stack",
-      Self::StartSharingServices => "Start file sharing services",
+      Self::StartSharingServices => "Turn on file sharing & network discovery",
     }
   }
 
@@ -41,7 +41,7 @@ impl RepairAction {
       Self::RenewDhcp => "ipconfig /renew",
       Self::ResetWinsock => "netsh winsock reset",
       Self::ResetTcpip => "netsh int ip reset",
-      Self::StartSharingServices => "Start-Service LanmanWorkstation, LanmanServer",
+      Self::StartSharingServices => "Start sharing services + enable File/Printer Sharing and Network Discovery firewall rules",
     }
   }
 }
@@ -128,9 +128,11 @@ New-ItemProperty -Path $params -Name ServiceDll -PropertyType ExpandString -Valu
 New-ItemProperty -Path $params -Name ServiceDllUnloadOnStop -PropertyType DWord -Value 1 -Force | Out-Null
 ";
 
-/// Sets the Workstation (SMB client) and Server (SMB server) services to start
-/// automatically and starts them. If the Workstation service cannot start
-/// because its registration is damaged (missing `ServiceDll`), the Windows
+/// Turns on file sharing end to end: sets the Workstation (SMB client), Server
+/// (SMB server) and discovery services to start automatically and starts them,
+/// and enables the File and Printer Sharing and Network Discovery firewall rule
+/// groups for the active network profile. If the Workstation service cannot
+/// start because its registration is damaged (missing `ServiceDll`), the Windows
 /// default is restored first.
 fn start_sharing_services() -> RepairOutcome {
   let action = RepairAction::StartSharingServices;
@@ -158,50 +160,104 @@ fn start_sharing_services() -> RepairOutcome {
   } else {
     ""
   };
+
+  // Re-read the real state instead of trusting the exit code.
   let client = !sharing::workstation_stopped();
+  if !client {
+    let reason = match sharing::workstation_start_error() {
+      Some(event) => format!("Windows reported: \"{event}\""),
+      None => "Windows did not record a reason. Check Event Viewer > Windows Logs > System for Service Control Manager errors.".into(),
+    };
+    return RepairOutcome::new(action, RepairStatus::Failed, format!("{restored_note}The Workstation service could not be started. {reason}"))
+      .output(&output);
+  }
+
   let server = probe::tcp_check(SocketAddr::from((Ipv4Addr::LOCALHOST, 445)), Duration::from_secs(2)).is_ok();
-  match (client, server) {
-    (true, true) => RepairOutcome::new(
+  let discovery = sharing::discovery_status().ok();
+  let rule_on = |r: &sharing::RuleState| r.total > 0 && r.enabled > 0;
+  let file_sharing = discovery.as_ref().map(|d| rule_on(&d.file_sharing));
+  let net_discovery = discovery.as_ref().map(|d| rule_on(&d.network_discovery));
+  let on_public = discovery
+    .as_ref()
+    .map(|d| d.profiles.iter().any(|p| p.category == "Public"))
+    .unwrap_or(false);
+
+  // Collect whatever is still not on after the repair.
+  let mut remaining: Vec<&str> = Vec::new();
+  if !server {
+    remaining.push("the Server service is not accepting connections on port 445, so other computers cannot open this computer's shares");
+  }
+  if file_sharing == Some(false) {
+    remaining.push("File and printer sharing is still turned off in the firewall");
+  }
+  if net_discovery == Some(false) {
+    remaining.push("Network discovery is still turned off in the firewall");
+  }
+
+  let outcome = if remaining.is_empty() {
+    let enabled_note = if file_sharing == Some(true) && net_discovery == Some(true) {
+      " File and printer sharing and network discovery are turned on."
+    } else if file_sharing == Some(true) {
+      " File and printer sharing is turned on."
+    } else {
+      ""
+    };
+    RepairOutcome::new(
       action,
       RepairStatus::Success,
-      format!("{restored_note}The Workstation and Server services are running and set to start automatically."),
-    ),
-    (true, false) => RepairOutcome::new(
+      format!("{restored_note}The Workstation and Server services are running and set to start automatically.{enabled_note}"),
+    )
+  } else {
+    let detail = remaining.join("; ");
+    let hint = if on_public {
+      " This network is set to Public, which blocks sharing — set it to Private in Advanced sharing settings, then try again."
+    } else {
+      " Open Advanced sharing settings to finish turning these on."
+    };
+    RepairOutcome::new(
       action,
       RepairStatus::Partial,
-      format!(
-        "{restored_note}The Workstation service is running, so this computer can open shared folders. The Server service is not accepting connections, so other computers cannot open this computer's shares."
-      ),
-    ),
-    _ => {
-      let reason = match sharing::workstation_start_error() {
-        Some(event) => format!("Windows reported: \"{event}\""),
-        None => "Windows did not record a reason. Check Event Viewer > Windows Logs > System for Service Control Manager errors.".into(),
-      };
-      RepairOutcome::new(action, RepairStatus::Failed, format!("{restored_note}The Workstation service could not be started. {reason}"))
-    }
-  }
-  .output(&output)
+      format!("{restored_note}Services were started, but {detail}.{hint}"),
+    )
+  };
+  outcome.output(&output)
 }
 
 /// The elevated script for [`start_sharing_services`]. Each service is
-/// attempted even if the other fails; exit code 2 means a start failed.
+/// attempted even if another fails; a failure of the core SMB services sets
+/// exit code 2. After the services, the File and Printer Sharing
+/// (`@FirewallAPI.dll,-28502`) and Network Discovery (`@FirewallAPI.dll,-32752`)
+/// firewall rule groups are enabled for the active profile through the
+/// language-independent firewall COM API (the same one the status reader uses).
 fn sharing_services_script(restore_registration: bool) -> String {
   format!(
     "$ErrorActionPreference = 'Stop'
-{}
+{restore}
 $failed = $false
-foreach ($name in 'LanmanServer', 'LanmanWorkstation') {{
+foreach ($name in 'LanmanServer', 'LanmanWorkstation', 'FDResPub', 'fdPHost') {{
   try {{
     Set-Service -Name $name -StartupType Automatic
     Start-Service -Name $name
   }} catch {{
     [Console]::Error.WriteLine(\"${{name}}: $($_.Exception.Message)\")
-    $failed = $true
+    if ($name -eq 'LanmanServer' -or $name -eq 'LanmanWorkstation') {{ $failed = $true }}
   }}
 }}
+try {{
+  $fw = New-Object -ComObject HNetCfg.FwPolicy2
+  $active = $fw.CurrentProfileTypes
+  foreach ($rule in @($fw.Rules)) {{
+    if ($rule.Direction -eq 1 -and
+        ($rule.Grouping -eq '@FirewallAPI.dll,-28502' -or $rule.Grouping -eq '@FirewallAPI.dll,-32752') -and
+        ($rule.Profiles -band $active) -ne 0) {{
+      $rule.Enabled = $true
+    }}
+  }}
+}} catch {{
+  [Console]::Error.WriteLine(\"firewall: $($_.Exception.Message)\")
+}}
 if ($failed) {{ exit 2 }}",
-    if restore_registration { RESTORE_WORKSTATION_DLL } else { "" }
+    restore = if restore_registration { RESTORE_WORKSTATION_DLL } else { "" }
   )
 }
 
