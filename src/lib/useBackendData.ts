@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../auth/context";
 import { errorMessage, isAppError } from "./api";
 
-type BackendData<T> = {
+export type BackendData<T> = {
   data: T | null;
   error: string | null;
   loading: boolean;

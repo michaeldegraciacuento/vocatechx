@@ -36,6 +36,18 @@ const COMMANDS: &[&str] = &[
   "net_history",
   "net_report",
   "net_export_report",
+  "dev_printers",
+  "dev_spooler_status",
+  "dev_print_jobs",
+  "dev_devices",
+  "dev_drivers",
+  "dev_open_printer_settings",
+  "dev_open_printer_window",
+  "dev_open_device_manager",
+  "dev_open_device_properties",
+  "dev_history",
+  "dev_report",
+  "dev_export_report",
 ];
 
 fn main() {

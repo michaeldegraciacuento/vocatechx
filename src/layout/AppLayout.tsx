@@ -8,6 +8,7 @@ import AiTroubleshooterPage from "../pages/AiTroubleshooterPage";
 import DashboardPage from "../pages/DashboardPage";
 import NetworkCenterPage from "../pages/NetworkCenterPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
+import PrinterDevicesPage from "../pages/PrinterDevicesPage";
 
 /** Shell for every protected page. Only rendered for an active session (see App). */
 function AppLayout() {
@@ -27,6 +28,9 @@ function AppLayout() {
       break;
     case "network-center":
       content = <NetworkCenterPage />;
+      break;
+    case "printer-devices":
+      content = <PrinterDevicesPage />;
       break;
     case "activity-logs":
       content = <ActivityLogsPage />;

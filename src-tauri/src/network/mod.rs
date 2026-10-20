@@ -8,7 +8,7 @@ pub mod adapters;
 pub mod diagnostics;
 pub mod dns;
 mod probe;
-mod process;
+pub mod process;
 pub mod repair;
 pub mod report;
 pub mod sharing;

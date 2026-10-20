@@ -3,6 +3,7 @@ mod auth;
 mod commands;
 mod conversations;
 mod db;
+mod devices;
 mod error;
 mod network;
 mod ralp;
@@ -90,6 +91,18 @@ pub fn run() {
       commands::net_history,
       commands::net_report,
       commands::net_export_report,
+      commands::dev_printers,
+      commands::dev_spooler_status,
+      commands::dev_print_jobs,
+      commands::dev_devices,
+      commands::dev_drivers,
+      commands::dev_open_printer_settings,
+      commands::dev_open_printer_window,
+      commands::dev_open_device_manager,
+      commands::dev_open_device_properties,
+      commands::dev_history,
+      commands::dev_report,
+      commands::dev_export_report,
     ])
     .build(tauri::generate_context!())
     .expect("error while building tauri application")

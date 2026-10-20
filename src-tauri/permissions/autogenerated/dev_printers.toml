@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-dev-printers"
+description = "Enables the dev_printers command without any pre-configured scope."
+commands.allow = ["dev_printers"]
+
+[[permission]]
+identifier = "deny-dev-printers"
+description = "Denies the dev_printers command without any pre-configured scope."
+commands.deny = ["dev_printers"]

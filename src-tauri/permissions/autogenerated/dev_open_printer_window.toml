@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-dev-open-printer-window"
+description = "Enables the dev_open_printer_window command without any pre-configured scope."
+commands.allow = ["dev_open_printer_window"]
+
+[[permission]]
+identifier = "deny-dev-open-printer-window"
+description = "Denies the dev_open_printer_window command without any pre-configured scope."
+commands.deny = ["dev_open_printer_window"]

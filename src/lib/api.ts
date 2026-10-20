@@ -272,6 +272,81 @@ export type ReportDetail = {
   logs: { level: "info" | "warning" | "error"; message: string }[];
 };
 
+// ---------------------------------------------------------------------------
+// Printer & Devices
+
+/** Status-indicator class shared by printers, devices and the spooler. */
+export type Health = "ok" | "warn" | "error" | "offline";
+
+export type PrinterInfo = {
+  name: string;
+  isDefault: boolean;
+  shared: boolean;
+  status: string;
+  health: Health;
+  connection: string;
+  portName: string | null;
+  driverName: string | null;
+  manufacturer: string | null;
+  location: string | null;
+  comment: string | null;
+  serverName: string | null;
+};
+
+export type SpoolerStatus = {
+  exists: boolean;
+  displayName: string;
+  state: string;
+  running: boolean;
+  health: "ok" | "warn" | "error";
+  startMode: string;
+  startName: string | null;
+  processId: number | null;
+  exitCode: number;
+  canStop: boolean;
+  summary: string;
+};
+
+export type PrintJob = {
+  id: number;
+  printerName: string;
+  documentName: string;
+  owner: string | null;
+  status: string;
+  pages: number | null;
+  sizeBytes: number | null;
+  submittedAt: number | null;
+  health: "ok" | "warn" | "error";
+  needsAttention: boolean;
+};
+
+export type DeviceInfo = {
+  instanceId: string;
+  name: string;
+  category: string;
+  class: string | null;
+  manufacturer: string | null;
+  service: string | null;
+  status: string;
+  problemCode: number;
+  problemText: string | null;
+  health: "ok" | "warn" | "error";
+  present: boolean;
+};
+
+export type DriverInfo = {
+  deviceName: string;
+  provider: string | null;
+  version: string | null;
+  date: string | null;
+  category: string;
+  class: string | null;
+  manufacturer: string | null;
+};
+
+/** A native per-printer window the backend can open through printui.dll. */
+export type PrinterWindow = "queue" | "properties" | "preferences";
+
 export function isAppError(error: unknown): error is AppError {
   return typeof error === "object" && error !== null && "code" in error && "message" in error;
 }
@@ -333,4 +408,19 @@ export const api = {
   /** Returns the saved path, or null if the save dialog was cancelled. */
   netExportReport: (runId: number, format: "txt" | "pdf") =>
     invoke<string | null>("net_export_report", { runId, format, utcOffsetMinutes: -new Date().getTimezoneOffset() }),
+
+  devPrinters: () => invoke<PrinterInfo[]>("dev_printers"),
+  devSpoolerStatus: () => invoke<SpoolerStatus>("dev_spooler_status"),
+  devPrintJobs: () => invoke<PrintJob[]>("dev_print_jobs"),
+  devDevices: () => invoke<DeviceInfo[]>("dev_devices"),
+  devDrivers: () => invoke<DriverInfo[]>("dev_drivers"),
+  devOpenPrinterSettings: () => invoke<void>("dev_open_printer_settings"),
+  devOpenPrinterWindow: (name: string, window: PrinterWindow) => invoke<void>("dev_open_printer_window", { name, window }),
+  devOpenDeviceManager: () => invoke<void>("dev_open_device_manager"),
+  devOpenDeviceProperties: (instanceId: string) => invoke<void>("dev_open_device_properties", { instanceId }),
+  devHistory: (limit?: number) => invoke<ActivityItem[]>("dev_history", { limit }),
+  devReport: (runId: number) => invoke<ReportDetail>("dev_report", { runId }),
+  /** Returns the saved path, or null if the save dialog was cancelled. */
+  devExportReport: (runId: number, format: "txt" | "pdf") =>
+    invoke<string | null>("dev_export_report", { runId, format, utcOffsetMinutes: -new Date().getTimezoneOffset() }),
 };

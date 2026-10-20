@@ -41,6 +41,18 @@
     "allow-net-history",
     "allow-net-report",
     "allow-net-export-report",
-    "allow-net-wifi-password"
+    "allow-net-wifi-password",
+    "allow-dev-printers",
+    "allow-dev-spooler-status",
+    "allow-dev-print-jobs",
+    "allow-dev-devices",
+    "allow-dev-drivers",
+    "allow-dev-open-printer-settings",
+    "allow-dev-open-printer-window",
+    "allow-dev-open-device-manager",
+    "allow-dev-open-device-properties",
+    "allow-dev-history",
+    "allow-dev-report",
+    "allow-dev-export-report"
   ]
 }

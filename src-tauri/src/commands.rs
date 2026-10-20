@@ -7,6 +7,10 @@ use tauri::{AppHandle, Manager, State};
 
 use crate::activity::{self, ActivityItem};
 use crate::conversations::{self, ChatMessage, ConversationSummary};
+use crate::devices::hardware::{self, DeviceInfo, DriverInfo};
+use crate::devices::jobs::{self, PrintJob};
+use crate::devices::printers::{self, PrinterInfo, PrinterWindow};
+use crate::devices::spooler::{self, SpoolerStatus};
 use crate::error::{AppError, AppResult};
 use crate::network::adapters::{self, Adapter};
 use crate::network::diagnostics::{self, DiagnosticReport, NetworkHealth, PerformanceResult};
@@ -557,13 +561,13 @@ pub async fn net_wifi_password(app: AppHandle, adapter_id: String) -> AppResult<
 #[tauri::command]
 pub fn net_history(state: State<'_, AppState>, limit: Option<u32>) -> AppResult<Vec<ActivityItem>> {
   state.session.require_active()?;
-  report::history(&state.db(), limit.unwrap_or(50).clamp(1, 200))
+  report::history(&state.db(), report::OPERATION_TYPES, limit.unwrap_or(50).clamp(1, 200))
 }
 
 #[tauri::command]
 pub fn net_report(state: State<'_, AppState>, run_id: i64) -> AppResult<ReportDetail> {
   state.session.require_active()?;
-  report::detail(&state.db(), run_id)
+  report::detail(&state.db(), report::OPERATION_TYPES, run_id)
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -586,9 +590,9 @@ pub async fn net_export_report(
   run_blocking(app, move |state| {
     use tauri_plugin_dialog::DialogExt;
     state.session.require_active()?;
-    let detail = report::detail(&state.db(), run_id)?;
+    let detail = report::detail(&state.db(), report::OPERATION_TYPES, run_id)?;
     let offset = utc_offset_minutes.clamp(-14 * 60, 14 * 60);
-    let text = report::render_text(&detail, network::computer_name().as_deref(), offset);
+    let text = report::render_text(&detail, "Network Center", network::computer_name().as_deref(), offset);
     let (extension, filter, bytes) = match format {
       ExportFormat::Txt => ("txt", "Text file", text.into_bytes()),
       ExportFormat::Pdf => ("pdf", "PDF document", report::render_pdf(&text)),
@@ -598,6 +602,135 @@ pub async fn net_export_report(
       .file()
       .set_title("Save network report")
       .set_file_name(format!("VocaTechX-network-report-{run_id}.{extension}"))
+      .add_filter(filter, &[extension])
+      .blocking_save_file()
+    else {
+      return Ok(None);
+    };
+    let mut path = picked
+      .into_path()
+      .map_err(|_| AppError::validation("That location is not supported. Choose a folder on this computer."))?;
+    if path.extension().is_none() {
+      path.set_extension(extension);
+    }
+    std::fs::write(&path, bytes).map_err(|e| AppError::Network(format!("Could not save the report: {e}")))?;
+    Ok(Some(path.to_string_lossy().into_owned()))
+  })
+  .await
+}
+
+// ---------------------------------------------------------------------------
+// Printer & Devices
+
+#[tauri::command]
+pub async fn dev_printers(app: AppHandle) -> AppResult<Vec<PrinterInfo>> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    printers::list().map_err(AppError::Network)
+  })
+  .await
+}
+
+#[tauri::command]
+pub async fn dev_spooler_status(app: AppHandle) -> AppResult<SpoolerStatus> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    spooler::status().map_err(AppError::Network)
+  })
+  .await
+}
+
+#[tauri::command]
+pub async fn dev_print_jobs(app: AppHandle) -> AppResult<Vec<PrintJob>> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    jobs::list().map_err(AppError::Network)
+  })
+  .await
+}
+
+#[tauri::command]
+pub async fn dev_devices(app: AppHandle) -> AppResult<Vec<DeviceInfo>> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    hardware::list().map_err(AppError::Network)
+  })
+  .await
+}
+
+#[tauri::command]
+pub async fn dev_drivers(app: AppHandle) -> AppResult<Vec<DriverInfo>> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    hardware::drivers().map_err(AppError::Network)
+  })
+  .await
+}
+
+#[tauri::command]
+pub fn dev_open_printer_settings(state: State<'_, AppState>) -> AppResult<()> {
+  state.session.require_active()?;
+  printers::open_settings()
+}
+
+#[tauri::command]
+pub async fn dev_open_printer_window(app: AppHandle, name: String, window: PrinterWindow) -> AppResult<()> {
+  run_blocking(app, move |state| {
+    state.session.require_active()?;
+    printers::open_window(&name, window)
+  })
+  .await
+}
+
+#[tauri::command]
+pub fn dev_open_device_manager(state: State<'_, AppState>) -> AppResult<()> {
+  state.session.require_active()?;
+  hardware::open_device_manager()
+}
+
+#[tauri::command]
+pub fn dev_open_device_properties(state: State<'_, AppState>, instance_id: String) -> AppResult<()> {
+  state.session.require_active()?;
+  hardware::open_device_properties(&instance_id)
+}
+
+#[tauri::command]
+pub fn dev_history(state: State<'_, AppState>, limit: Option<u32>) -> AppResult<Vec<ActivityItem>> {
+  state.session.require_active()?;
+  report::history(&state.db(), report::DEVICE_OPERATION_TYPES, limit.unwrap_or(50).clamp(1, 200))
+}
+
+#[tauri::command]
+pub fn dev_report(state: State<'_, AppState>, run_id: i64) -> AppResult<ReportDetail> {
+  state.session.require_active()?;
+  report::detail(&state.db(), report::DEVICE_OPERATION_TYPES, run_id)
+}
+
+/// Saves a Printer & Devices report where the user chooses. Returns the saved
+/// path, or `None` if the save dialog was cancelled.
+#[tauri::command]
+pub async fn dev_export_report(
+  app: AppHandle,
+  run_id: i64,
+  format: ExportFormat,
+  utc_offset_minutes: i32,
+) -> AppResult<Option<String>> {
+  let handle = app.clone();
+  run_blocking(app, move |state| {
+    use tauri_plugin_dialog::DialogExt;
+    state.session.require_active()?;
+    let detail = report::detail(&state.db(), report::DEVICE_OPERATION_TYPES, run_id)?;
+    let offset = utc_offset_minutes.clamp(-14 * 60, 14 * 60);
+    let text = report::render_text(&detail, "Printer & Devices", network::computer_name().as_deref(), offset);
+    let (extension, filter, bytes) = match format {
+      ExportFormat::Txt => ("txt", "Text file", text.into_bytes()),
+      ExportFormat::Pdf => ("pdf", "PDF document", report::render_pdf(&text)),
+    };
+    let Some(picked) = handle
+      .dialog()
+      .file()
+      .set_title("Save printer & devices report")
+      .set_file_name(format!("VocaTechX-devices-report-{run_id}.{extension}"))
       .add_filter(filter, &[extension])
       .blocking_save_file()
     else {
