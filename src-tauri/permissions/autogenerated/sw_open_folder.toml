@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-open-folder"
+description = "Enables the sw_open_folder command without any pre-configured scope."
+commands.allow = ["sw_open_folder"]
+
+[[permission]]
+identifier = "deny-sw-open-folder"
+description = "Denies the sw_open_folder command without any pre-configured scope."
+commands.deny = ["sw_open_folder"]

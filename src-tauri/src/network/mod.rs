@@ -12,7 +12,7 @@ pub mod process;
 pub mod repair;
 pub mod report;
 pub mod sharing;
-mod sys;
+pub(crate) mod sys;
 pub mod validate;
 pub mod wifi;
 

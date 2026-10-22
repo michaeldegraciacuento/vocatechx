@@ -66,3 +66,32 @@ pub fn query_one<T: DeserializeOwned>(context: &str, script: &str) -> Result<T, 
     None => Err(query_error(context, &output)),
   }
 }
+
+#[cfg(test)]
+mod tests {
+  /// Runs every read query against this machine's real Windows state.
+  /// `cargo test devices_live -- --ignored --nocapture`
+  #[test]
+  #[ignore]
+  fn devices_live() {
+    let spooler = super::spooler::status().unwrap();
+    println!("spooler: {} ({})", spooler.state, spooler.start_mode);
+    assert!(spooler.exists);
+
+    let printers = super::printers::list().unwrap();
+    println!("printers: {}", printers.len());
+    assert!(printers.iter().all(|p| !p.name.is_empty()));
+
+    let jobs = super::jobs::list().unwrap();
+    println!("jobs: {}", jobs.len());
+    assert!(jobs.iter().all(|j| !j.printer_name.is_empty()));
+
+    let devices = super::hardware::list().unwrap();
+    println!("devices: {} ({} with problems)", devices.len(), devices.iter().filter(|d| d.problem_code != 0).count());
+    assert!(!devices.is_empty());
+
+    let drivers = super::hardware::drivers().unwrap();
+    println!("drivers: {}", drivers.len());
+    assert!(!drivers.is_empty());
+  }
+}

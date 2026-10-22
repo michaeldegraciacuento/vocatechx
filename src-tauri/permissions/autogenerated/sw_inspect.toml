@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-inspect"
+description = "Enables the sw_inspect command without any pre-configured scope."
+commands.allow = ["sw_inspect"]
+
+[[permission]]
+identifier = "deny-sw-inspect"
+description = "Denies the sw_inspect command without any pre-configured scope."
+commands.deny = ["sw_inspect"]

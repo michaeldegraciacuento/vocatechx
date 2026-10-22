@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-history"
+description = "Enables the sw_history command without any pre-configured scope."
+commands.allow = ["sw_history"]
+
+[[permission]]
+identifier = "deny-sw-history"
+description = "Denies the sw_history command without any pre-configured scope."
+commands.deny = ["sw_history"]

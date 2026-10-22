@@ -53,6 +53,16 @@
     "allow-dev-open-device-properties",
     "allow-dev-history",
     "allow-dev-report",
-    "allow-dev-export-report"
+    "allow-dev-export-report",
+    "allow-sw-library",
+    "allow-sw-status",
+    "allow-sw-icon",
+    "allow-sw-inspect",
+    "allow-sw-save-app",
+    "allow-sw-open-folder",
+    "allow-sw-install",
+    "allow-sw-uninstall",
+    "allow-sw-cancel-install",
+    "allow-sw-history"
   ]
 }

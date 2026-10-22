@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::query_one;
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RawService {
   #[serde(default)]
   exists: bool,
@@ -62,12 +63,10 @@ if ($null -eq $s) {
     exists      = $true
     displayName = [string]$s.DisplayName
     state       = [string]$s.State
-    status      = [string]$s.Status
     startMode   = [string]$s.StartMode
     startName   = [string]$s.StartName
     processId   = [int]$s.ProcessId
     exitCode    = [int]$s.ExitCode
-    status      = [string]$s.Status
     acceptStop  = [bool]$s.AcceptStop
   } | ConvertTo-Json -Compress
 }
@@ -140,3 +139,28 @@ pub fn status() -> Result<SpoolerStatus, String> {
 /// The exact Windows service name, for callers that control it (later phases).
 #[allow(dead_code)]
 pub const SERVICE_NAME: &str = "Spooler";
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn raw_service_reads_script_json() {
+    let line = r#"{"exists":true,"displayName":"Print Spooler","state":"Running","startMode":"Auto","startName":"LocalSystem","processId":4321,"exitCode":0,"acceptStop":true}"#;
+    let raw: RawService = serde_json::from_str(line).unwrap();
+    assert!(raw.exists && raw.accept_stop);
+    assert_eq!(raw.display_name.as_deref(), Some("Print Spooler"));
+    assert_eq!(raw.process_id, 4321);
+    assert_eq!(normalize_start_mode(raw.start_mode), "Automatic");
+  }
+
+  #[test]
+  fn script_has_no_duplicate_keys() {
+    let mut keys: Vec<&str> =
+      SPOOLER_SCRIPT.lines().filter_map(|l| l.split_once(" = ").map(|(k, _)| k.trim())).collect();
+    let total = keys.len();
+    keys.sort_unstable();
+    keys.dedup();
+    assert_eq!(keys.len(), total, "PowerShell rejects duplicate keys in a hash literal");
+  }
+}

@@ -9,6 +9,7 @@ import DashboardPage from "../pages/DashboardPage";
 import NetworkCenterPage from "../pages/NetworkCenterPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
 import PrinterDevicesPage from "../pages/PrinterDevicesPage";
+import SoftwareCenterPage from "../pages/SoftwareCenterPage";
 
 /** Shell for every protected page. Only rendered for an active session (see App). */
 function AppLayout() {
@@ -31,6 +32,9 @@ function AppLayout() {
       break;
     case "printer-devices":
       content = <PrinterDevicesPage />;
+      break;
+    case "software-center":
+      content = <SoftwareCenterPage />;
       break;
     case "activity-logs":
       content = <ActivityLogsPage />;

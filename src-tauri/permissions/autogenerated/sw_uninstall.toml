@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-uninstall"
+description = "Enables the sw_uninstall command without any pre-configured scope."
+commands.allow = ["sw_uninstall"]
+
+[[permission]]
+identifier = "deny-sw-uninstall"
+description = "Denies the sw_uninstall command without any pre-configured scope."
+commands.deny = ["sw_uninstall"]

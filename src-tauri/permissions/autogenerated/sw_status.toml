@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-status"
+description = "Enables the sw_status command without any pre-configured scope."
+commands.allow = ["sw_status"]
+
+[[permission]]
+identifier = "deny-sw-status"
+description = "Denies the sw_status command without any pre-configured scope."
+commands.deny = ["sw_status"]

@@ -8,6 +8,7 @@ mod error;
 mod network;
 mod ralp;
 mod session;
+mod software;
 mod system_info;
 
 use std::sync::{Mutex, MutexGuard};
@@ -20,6 +21,7 @@ pub struct AppState {
   session: session::Session,
   monitor: system_info::SystemMonitor,
   ralp: ralp::Ralp,
+  software: software::SoftwareCenter,
 }
 
 impl AppState {
@@ -52,8 +54,17 @@ pub fn run() {
         session: session::Session::default(),
         monitor: system_info::SystemMonitor::new(),
         ralp: ralp::Ralp::new(ralp::Locations::resolve(app.handle())?),
+        software: software::SoftwareCenter::resolve(),
       });
       Ok(())
+    })
+    .on_window_event(|window, event| {
+      // Closing mid-install would abandon the batch and its history entry.
+      if let tauri::WindowEvent::CloseRequested { api, .. } = event
+        && window.try_state::<AppState>().is_some_and(|state| state.software.is_installing())
+      {
+        api.prevent_close();
+      }
     })
     .invoke_handler(tauri::generate_handler![
       commands::get_session,
@@ -103,6 +114,16 @@ pub fn run() {
       commands::dev_history,
       commands::dev_report,
       commands::dev_export_report,
+      commands::sw_library,
+      commands::sw_status,
+      commands::sw_icon,
+      commands::sw_inspect,
+      commands::sw_save_app,
+      commands::sw_open_folder,
+      commands::sw_install,
+      commands::sw_uninstall,
+      commands::sw_cancel_install,
+      commands::sw_history,
     ])
     .build(tauri::generate_context!())
     .expect("error while building tauri application")

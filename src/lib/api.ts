@@ -16,6 +16,7 @@ export type AppErrorCode =
   | "ai"
   | "network"
   | "database"
+  | "software"
   | "internal";
 
 export type AppError = {
@@ -347,6 +348,106 @@ export type DriverInfo = {
 /** A native per-printer window the backend can open through printui.dll. */
 export type PrinterWindow = "queue" | "properties" | "preferences";
 
+// Software Center
+
+/** How an installer is run silently. */
+export type InstallerType = "msi" | "inno" | "nsis" | "burn" | "custom";
+
+export type SoftwareApp = {
+  /** The app's folder name inside `application/`. */
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  installer: string | null;
+  installerType: InstallerType | null;
+  version: string | null;
+  publisher: string | null;
+  sizeBytes: number | null;
+  /** Why the app cannot be installed, if it cannot. */
+  problem: string | null;
+  /** Set when the installer can be set up (again) or edited. */
+  source: string | null;
+  /** The name Windows lists the app under. */
+  detect: string | null;
+  /** Silent switches, for custom installers. */
+  args: string[];
+  /** Changes when the app's icon does; null if it has none (yet). */
+  iconVersion: number | null;
+};
+
+/** An installer in `application/` that has not been set up yet. */
+export type PendingInstaller = {
+  source: string;
+  fileName: string;
+  folder: string | null;
+  sizeBytes: number;
+};
+
+export type SoftwareLibrary = {
+  folder: string;
+  folderExists: boolean;
+  elevated: boolean;
+  installing: boolean;
+  categories: string[];
+  apps: SoftwareApp[];
+  pending: PendingInstaller[];
+};
+
+export type InstallState = "not_installed" | "installed" | "up_to_date" | "update_available" | "newer_installed";
+
+export type SoftwareStatus = { id: string; state: InstallState; installedVersion: string | null };
+
+export type InstallerDetails = {
+  source: string;
+  fileName: string;
+  sizeBytes: number;
+  detectedType: InstallerType | null;
+  productName: string | null;
+  version: string | null;
+  company: string | null;
+  signature: "valid" | "not_signed" | "tampered" | "untrusted";
+  signer: string | null;
+  suggestedName: string;
+  suggestedDetect: string;
+};
+
+export type AppSetup = {
+  source: string;
+  name: string;
+  category: string;
+  description: string;
+  installerType: InstallerType;
+  args: string[];
+  detect: string;
+};
+
+export type InstallStep = "copying" | "verifying" | "installing" | "uninstalling" | "waiting" | "checking";
+
+export type InstallStatus =
+  | "installed"
+  | "updated"
+  | "uninstalled"
+  | "skipped"
+  | "failed"
+  | "cancelled"
+  | "unverified"
+  | "still_running";
+
+export type InstallResult = {
+  id: string;
+  name: string;
+  status: InstallStatus;
+  message: string;
+  exitCode: number | null;
+  rebootRequired: boolean;
+  version: string | null;
+};
+
+export type InstallEvent =
+  | { type: "step"; index: number; step: InstallStep; message: string }
+  | { type: "finished"; index: number; result: InstallResult };
+
 export function isAppError(error: unknown): error is AppError {
   return typeof error === "object" && error !== null && "code" in error && "message" in error;
 }
@@ -423,4 +524,25 @@ export const api = {
   /** Returns the saved path, or null if the save dialog was cancelled. */
   devExportReport: (runId: number, format: "txt" | "pdf") =>
     invoke<string | null>("dev_export_report", { runId, format, utcOffsetMinutes: -new Date().getTimezoneOffset() }),
+
+  swLibrary: () => invoke<SoftwareLibrary>("sw_library"),
+  swStatus: () => invoke<SoftwareStatus[]>("sw_status"),
+  /** The app's icon as a data: URL, or null. */
+  swIcon: (id: string) => invoke<string | null>("sw_icon", { id }),
+  swInspect: (source: string) => invoke<InstallerDetails>("sw_inspect", { source }),
+  /** Returns the saved app's name. */
+  swSaveApp: (setup: AppSetup) => invoke<string>("sw_save_app", { setup }),
+  swOpenFolder: () => invoke<void>("sw_open_folder"),
+  swInstall: (ids: string[], onEvent: (event: InstallEvent) => void) => {
+    const channel = new Channel<InstallEvent>();
+    channel.onmessage = onEvent;
+    return invoke<InstallResult[]>("sw_install", { ids, onEvent: channel });
+  },
+  swUninstall: (ids: string[], onEvent: (event: InstallEvent) => void) => {
+    const channel = new Channel<InstallEvent>();
+    channel.onmessage = onEvent;
+    return invoke<InstallResult[]>("sw_uninstall", { ids, onEvent: channel });
+  },
+  swCancelInstall: () => invoke<void>("sw_cancel_install"),
+  swHistory: (limit?: number) => invoke<ActivityItem[]>("sw_history", { limit }),
 };

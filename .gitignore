@@ -34,7 +34,8 @@ src-tauri/target/
 ai/models/
 
 # Optional AI runtime files
-ai/runtime/
+ai/runtime/*
+!ai/runtime/README.md
 
 # Editor directories and files
 .vscode/*
@@ -47,3 +48,6 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+# Software Center installers (large, and not ours to redistribute)
+application/*
+!application/README.md

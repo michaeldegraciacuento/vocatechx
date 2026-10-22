@@ -16,3 +16,27 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* A bar sliding back and forth, for work whose length is unknown (silent
+   installers do not report a percentage). */
+@keyframes vt-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.vt-indeterminate {
+  animation: vt-indeterminate 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-indeterminate {
+    animation: none;
+    transform: none;
+    width: 100% !important;
+    opacity: 0.5;
+  }
+}

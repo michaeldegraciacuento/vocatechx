@@ -16,6 +16,7 @@ use crate::network::process;
 /// Raw per-printer record emitted by the PowerShell query, in the shape its
 /// JSON uses.
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RawPrinter {
   name: String,
   #[serde(default)]
@@ -247,6 +248,16 @@ mod tests {
     assert_eq!(connection(Some("PORTPROMPT:"), false), "Virtual");
     assert_eq!(connection(None, true), "Network");
     assert_eq!(connection(None, false), "Local");
+  }
+
+  #[test]
+  fn raw_printer_reads_script_json() {
+    let line = r#"{"name":"HP","isDefault":true,"workOffline":true,"shared":false,"network":true,"portName":"IP_10.0.0.5","driverName":"HP Universal","manufacturer":"HP","location":"","comment":"","serverName":"","statusCode":3,"detectedError":0}"#;
+    let raw: RawPrinter = serde_json::from_str(line).unwrap();
+    assert!(raw.is_default && raw.work_offline && raw.network);
+    assert_eq!(raw.port_name.as_deref(), Some("IP_10.0.0.5"));
+    assert_eq!(raw.driver_name.as_deref(), Some("HP Universal"));
+    assert_eq!(raw.status_code, 3);
   }
 
   #[test]

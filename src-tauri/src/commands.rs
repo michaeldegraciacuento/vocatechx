@@ -21,6 +21,13 @@ use crate::network::wifi::{self, WifiPassword};
 use crate::network::{self, validate, DnsComparison};
 use crate::ralp::{self, ImportProgress, RalpStatus};
 use crate::session::SessionUser;
+use crate::software::{
+  self,
+  detect::InstallState,
+  inspect::{InstallerDetails, Signature},
+  install::{InstallEvent, ItemResult},
+  library::{AppSetup, InstallerType, PendingInstaller},
+};
 use crate::system_info::SystemOverview;
 use crate::{auth, db, AppState};
 
@@ -746,4 +753,286 @@ pub async fn dev_export_report(
     Ok(Some(path.to_string_lossy().into_owned()))
   })
   .await
+}
+
+// ---------------------------------------------------------------------------
+// Software Center
+
+/// The `application` folder's contents, cheap enough to poll so installers
+/// pasted into the folder appear on their own.
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareLibrary {
+  pub folder: String,
+  pub folder_exists: bool,
+  pub elevated: bool,
+  pub installing: bool,
+  pub categories: &'static [&'static str],
+  pub apps: Vec<SoftwareApp>,
+  pub pending: Vec<PendingInstaller>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareApp {
+  pub id: String,
+  pub name: String,
+  pub category: String,
+  pub description: String,
+  pub installer: Option<String>,
+  pub installer_type: Option<InstallerType>,
+  pub version: Option<String>,
+  pub publisher: Option<String>,
+  pub size_bytes: Option<u64>,
+  pub problem: Option<String>,
+  /// Set when the installer can be set up (again) from the setup dialog.
+  pub source: Option<String>,
+  /// The rest of app.json, so the edit dialog can start from it.
+  pub detect: Option<String>,
+  pub args: Vec<String>,
+  /// Changes when the app's icon does; `None` if it has none (yet).
+  pub icon_version: Option<u64>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareStatus {
+  pub id: String,
+  pub state: InstallState,
+  pub installed_version: Option<String>,
+}
+
+#[tauri::command]
+pub async fn sw_library(app: AppHandle) -> AppResult<SoftwareLibrary> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    let center = &state.software;
+    let scan = software::library::scan(center.folder());
+    let apps = scan
+      .apps
+      .into_iter()
+      .map(|a| {
+        let config = a.config;
+        SoftwareApp {
+          name: config.as_ref().map_or_else(|| a.id.clone(), |c| c.name.clone()),
+          category: config.as_ref().map_or_else(|| "Other".into(), |c| c.category.clone()),
+          description: config.as_ref().map(|c| c.description.clone()).unwrap_or_default(),
+          installer: config.as_ref().map(|c| c.installer.clone()),
+          installer_type: config.as_ref().map(|c| c.installer_type),
+          version: config.as_ref().and_then(|c| c.version.clone()),
+          publisher: config.as_ref().and_then(|c| c.publisher.clone()),
+          size_bytes: config.as_ref().map(|c| c.size_bytes),
+          detect: config.as_ref().map(|c| c.detect.clone()),
+          args: config.as_ref().map(|c| c.args.clone()).unwrap_or_default(),
+          icon_version: software::icon::version(&a.dir),
+          problem: a.problem,
+          source: a.source,
+          id: a.id,
+        }
+      })
+      .collect();
+    Ok(SoftwareLibrary {
+      folder: center.folder().to_string_lossy().into_owned(),
+      folder_exists: center.folder().is_dir(),
+      elevated: network::sys::is_elevated(),
+      installing: center.is_installing(),
+      categories: software::library::CATEGORIES,
+      apps,
+      pending: scan.pending,
+    })
+  })
+  .await
+}
+
+/// Whether each set-up app is installed, and how its version compares.
+#[tauri::command]
+pub async fn sw_status(app: AppHandle) -> AppResult<Vec<SoftwareStatus>> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    let programs = software::detect::installed_programs().map_err(AppError::Software)?;
+    let scan = software::library::scan(state.software.folder());
+    let statuses = scan
+      .apps
+      .iter()
+      .filter_map(|a| {
+        let config = a.config.as_ref()?;
+        let installed = software::detect::find(&programs, &config.detect);
+        Some(SoftwareStatus {
+          id: a.id.clone(),
+          state: software::detect::state(installed, config.version.as_deref()),
+          installed_version: installed.and_then(|p| p.version.clone()),
+        })
+      })
+      .collect();
+    // Apps set up before icons existed, or copied in with app.json, get one
+    // now. This only does work the first time; the folder poll picks it up.
+    software::icon::fill_missing(&scan.apps, &programs);
+    Ok(statuses)
+  })
+  .await
+}
+
+/// An app's icon as a `data:` URL, or `None` if it has none.
+#[tauri::command]
+pub async fn sw_icon(app: AppHandle, id: String) -> AppResult<Option<String>> {
+  run_blocking(app, move |state| {
+    state.session.require_active()?;
+    let scan = software::library::scan(state.software.folder());
+    Ok(scan.apps.iter().find(|a| a.id == id).and_then(|a| software::icon::data_url(&a.dir)))
+  })
+  .await
+}
+
+/// Extracts the icons of these apps again, best effort.
+fn refresh_icons(folder: &std::path::Path, ids: &[&str]) {
+  let scan = software::library::scan(folder);
+  let apps: Vec<_> = scan.apps.iter().filter(|a| ids.contains(&a.id.as_str())).collect();
+  if !apps.is_empty() {
+    software::icon::refresh(&apps, &software::detect::installed_programs().unwrap_or_default());
+  }
+}
+
+#[tauri::command]
+pub async fn sw_inspect(app: AppHandle, source: String) -> AppResult<InstallerDetails> {
+  run_blocking(app, move |state| {
+    state.session.require_active()?;
+    let path = software::library::source_path(state.software.folder(), &source)
+      .ok_or_else(|| AppError::validation("That installer is no longer in the application folder. Refresh the list."))?;
+    software::inspect::details(&source, &path).map_err(AppError::Software)
+  })
+  .await
+}
+
+#[tauri::command]
+pub async fn sw_save_app(app: AppHandle, setup: AppSetup) -> AppResult<String> {
+  run_blocking(app, move |state| {
+    state.session.require_active()?;
+    if state.software.is_installing() {
+      return Err(AppError::validation("Wait for the installation to finish before setting up apps."));
+    }
+    let folder = state.software.folder();
+    let path = software::library::source_path(folder, &setup.source)
+      .ok_or_else(|| AppError::validation("That installer is no longer in the application folder. Refresh the list."))?;
+    // A file altered after it was signed is never trusted.
+    if software::inspect::details(&setup.source, &path).map_err(AppError::Software)?.signature == Signature::Tampered {
+      return Err(AppError::validation(
+        "This installer's signature is broken: it was changed after its publisher signed it. Download it again from the publisher.",
+      ));
+    }
+    let (dir, config) = software::library::save(folder, &setup, software::inspect::version_and_publisher).map_err(AppError::validation)?;
+    if let Some(id) = dir.file_name().and_then(|n| n.to_str()) {
+      refresh_icons(folder, &[id]);
+    }
+    Ok(config.name)
+  })
+  .await
+}
+
+#[tauri::command]
+pub fn sw_open_folder(state: State<'_, AppState>) -> AppResult<()> {
+  state.session.require_active()?;
+  software::open_folder(&state.software).map_err(AppError::Software)
+}
+
+/// Installs the selected apps one at a time, streaming progress, and records
+/// the batch in the history.
+#[tauri::command]
+pub async fn sw_install(app: AppHandle, ids: Vec<String>, on_event: Channel<InstallEvent>) -> AppResult<Vec<ItemResult>> {
+  run_blocking(app, move |state| {
+    let user = state.session.require_active()?;
+    let started_at = auth::now();
+    let results = software::install::run_batch(&state.software, &ids, &|event| {
+      let _ = on_event.send(event);
+    })?;
+    record_batch(state, user.id, started_at, &results, false);
+    // A fresh install exposes the program's own icon, which is usually better
+    // than the installer's (often a generic "setup" icon).
+    let installed: Vec<&str> = results
+      .iter()
+      .filter(|r| matches!(r.status, software::install::ItemStatus::Installed | software::install::ItemStatus::Updated))
+      .map(|r| r.id.as_str())
+      .collect();
+    refresh_icons(state.software.folder(), &installed);
+    Ok(results)
+  })
+  .await
+}
+
+/// Uninstalls the selected apps one at a time, streaming progress, and records
+/// the batch in the history.
+#[tauri::command]
+pub async fn sw_uninstall(app: AppHandle, ids: Vec<String>, on_event: Channel<InstallEvent>) -> AppResult<Vec<ItemResult>> {
+  run_blocking(app, move |state| {
+    let user = state.session.require_active()?;
+    let started_at = auth::now();
+    let results = software::uninstall::run_batch(&state.software, &ids, &|event| {
+      let _ = on_event.send(event);
+    })?;
+    record_batch(state, user.id, started_at, &results, true);
+    Ok(results)
+  })
+  .await
+}
+
+fn record_batch(state: &AppState, user_id: i64, started_at: i64, results: &[ItemResult], uninstall: bool) {
+  use software::install::ItemStatus as S;
+  let count = |statuses: &[S]| results.iter().filter(|r| statuses.contains(&r.status)).count();
+  let done = count(&[S::Installed, S::Updated, S::Uninstalled]);
+  let problems = count(&[S::Failed, S::Unverified, S::StillRunning]);
+  let cancelled = count(&[S::Cancelled]);
+  let skipped = count(&[S::Skipped]);
+  let (verb, done_label, operation_type) =
+    if uninstall { ("Uninstall", "uninstalled", "software_uninstall") } else { ("Install", "installed", "software_install") };
+
+  let mut parts = vec![format!("{done} {done_label}")];
+  for (n, label) in [(skipped, "skipped"), (problems, "with problems"), (cancelled, "cancelled")] {
+    if n > 0 {
+      parts.push(format!("{n} {label}"));
+    }
+  }
+  if results.iter().any(|r| r.reboot_required) {
+    parts.push("restart required".into());
+  }
+  let logs: Vec<LogLine> = results
+    .iter()
+    .map(|r| {
+      let level = match r.status {
+        S::Installed | S::Updated | S::Uninstalled | S::Skipped => Level::Info,
+        S::Cancelled | S::Unverified | S::StillRunning => Level::Warning,
+        S::Failed => Level::Error,
+      };
+      let code = r.exit_code.map(|c| format!(" (exit code {c})")).unwrap_or_default();
+      LogLine::new(level, format!("{}: {}{code}", r.name, r.message))
+    })
+    .collect();
+  let title = if results.len() == 1 { format!("{verb} {}", results[0].name) } else { format!("{verb} {} apps", results.len()) };
+  let status = if problems > 0 { "failed" } else if cancelled > 0 { "cancelled" } else { "success" };
+  if let Err(e) = report::record(
+    &state.db(),
+    report::NewRun {
+      user_id,
+      operation_type,
+      title: &title,
+      status,
+      summary: &parts.join(", "),
+      started_at,
+      finished_at: auth::now(),
+      logs: &logs,
+    },
+  ) {
+    log::warn!("could not record the software {done_label} batch: {e:?}");
+  }
+}
+
+#[tauri::command]
+pub fn sw_cancel_install(state: State<'_, AppState>) -> AppResult<()> {
+  state.session.require_active()?;
+  state.software.request_cancel();
+  Ok(())
+}
+
+#[tauri::command]
+pub fn sw_history(state: State<'_, AppState>, limit: Option<u32>) -> AppResult<Vec<ActivityItem>> {
+  state.session.require_active()?;
+  report::history(&state.db(), report::SOFTWARE_OPERATION_TYPES, limit.unwrap_or(20).clamp(1, 200))
 }

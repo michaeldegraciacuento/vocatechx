@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sw-icon"
+description = "Enables the sw_icon command without any pre-configured scope."
+commands.allow = ["sw_icon"]
+
+[[permission]]
+identifier = "deny-sw-icon"
+description = "Denies the sw_icon command without any pre-configured scope."
+commands.deny = ["sw_icon"]

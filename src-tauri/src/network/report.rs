@@ -16,6 +16,9 @@ pub const OPERATION_TYPES: &[&str] = &["network_diagnostics", "network_repair", 
 /// reuse this one storage, export and PDF code.
 pub const DEVICE_OPERATION_TYPES: &[&str] = &["printer_repair", "spooler_repair", "print_queue", "printer_diagnostics", "device_scan"];
 
+/// Operation types written by the Software Center.
+pub const SOFTWARE_OPERATION_TYPES: &[&str] = &["software_install", "software_uninstall"];
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Level {
   Info,
@@ -58,7 +61,7 @@ pub struct NewRun<'a> {
 }
 
 pub fn record(conn: &Connection, run: NewRun<'_>) -> AppResult<i64> {
-  debug_assert!(OPERATION_TYPES.contains(&run.operation_type) || DEVICE_OPERATION_TYPES.contains(&run.operation_type));
+  debug_assert!([OPERATION_TYPES, DEVICE_OPERATION_TYPES, SOFTWARE_OPERATION_TYPES].iter().any(|types| types.contains(&run.operation_type)));
   let tx = conn.unchecked_transaction()?;
   tx.execute(
     "INSERT INTO operation_runs (operation_type, title, status, summary, started_at, finished_at, user_id)

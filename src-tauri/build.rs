@@ -48,11 +48,24 @@ const COMMANDS: &[&str] = &[
   "dev_history",
   "dev_report",
   "dev_export_report",
+  "sw_library",
+  "sw_status",
+  "sw_icon",
+  "sw_inspect",
+  "sw_save_app",
+  "sw_open_folder",
+  "sw_install",
+  "sw_uninstall",
+  "sw_cancel_install",
+  "sw_history",
 ];
 
 fn main() {
+  println!("cargo:rerun-if-changed=windows-app-manifest.xml");
   tauri_build::try_build(
-    tauri_build::Attributes::new().app_manifest(tauri_build::AppManifest::new().commands(COMMANDS)),
+    tauri_build::Attributes::new()
+      .app_manifest(tauri_build::AppManifest::new().commands(COMMANDS))
+      .windows_attributes(tauri_build::WindowsAttributes::new().app_manifest(include_str!("windows-app-manifest.xml"))),
   )
   .expect("failed to run tauri-build");
 }

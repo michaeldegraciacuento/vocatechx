@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use super::query_lines;
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RawJob {
   #[serde(default)]
   id: i64,
@@ -114,6 +115,17 @@ pub fn list() -> Result<Vec<PrintJob>, String> {
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn raw_job_reads_script_json() {
+    let line = r#"{"id":7,"printerName":"HP","documentName":"Report.pdf","owner":"mac","status":"Paused","pages":3,"sizeBytes":2048,"submittedAt":1700000000}"#;
+    let raw: RawJob = serde_json::from_str(line).unwrap();
+    assert_eq!(raw.id, 7);
+    assert_eq!(raw.printer_name.as_deref(), Some("HP"));
+    assert_eq!(raw.document_name.as_deref(), Some("Report.pdf"));
+    assert_eq!(raw.size_bytes, 2048);
+    assert_eq!(raw.submitted_at, Some(1700000000));
+  }
 
   #[test]
   fn classifies_job_status() {

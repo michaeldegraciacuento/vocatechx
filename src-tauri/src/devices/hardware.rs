@@ -11,6 +11,7 @@ use crate::error::{AppError, AppResult};
 use crate::network::process;
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RawDevice {
   #[serde(default)]
   instance_id: Option<String>,
@@ -104,7 +105,7 @@ const DEVICES_SCRIPT: &str = r#"
 $ErrorActionPreference = 'Stop'
 foreach ($d in Get-PnpDevice -ErrorAction Stop) {
   $code = 0
-  try { if ($null -ne $d.ProblemCode) { $code = [int]$d.ProblemCode } } catch {}
+  try { if ($null -ne $d.Problem) { $code = [int]$d.Problem } } catch {}
   [pscustomobject]@{
     instanceId   = [string]$d.InstanceId
     name         = [string]$d.FriendlyName
@@ -170,6 +171,7 @@ pub fn list() -> Result<Vec<DeviceInfo>, String> {
 // Drivers
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RawDriver {
   #[serde(default)]
   device_name: Option<String>,
@@ -274,6 +276,24 @@ mod tests {
     assert_eq!(category(Some("Media")), "Audio");
     assert_eq!(category(None), "Other devices");
     assert_eq!(category(Some("SomethingNew")), "Other devices");
+  }
+
+  #[test]
+  fn raw_device_reads_script_json() {
+    let line = r#"{"instanceId":"ACPI\\PNP0103\\0","name":"High precision event timer","class":"System","status":"Error","problemCode":22,"manufacturer":"(Standard system devices)","service":"","present":true}"#;
+    let device = to_device(serde_json::from_str(line).unwrap()).unwrap();
+    assert_eq!(device.instance_id, r"ACPI\PNP0103\0");
+    assert_eq!(device.problem_code, 22);
+    assert_eq!(device.health, "error");
+    assert!(device.present);
+  }
+
+  #[test]
+  fn raw_driver_reads_script_json() {
+    let line = r#"{"deviceName":"Intel(R) Wi-Fi 6","provider":"Intel","version":"23.10.0.8","date":"2024-01-02","class":"NET","manufacturer":"Intel"}"#;
+    let raw: RawDriver = serde_json::from_str(line).unwrap();
+    assert_eq!(raw.device_name.as_deref(), Some("Intel(R) Wi-Fi 6"));
+    assert_eq!(raw.version.as_deref(), Some("23.10.0.8"));
   }
 
   #[test]
