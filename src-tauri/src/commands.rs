@@ -29,7 +29,7 @@ use crate::software::{
   library::{AppSetup, InstallerType, PendingInstaller},
 };
 use crate::system_info::SystemOverview;
-use crate::{auth, db, AppState};
+use crate::{auth, db, learning, AppState};
 
 /// Runs slow work (password hashing, system queries) off the main thread so
 /// the window stays responsive.
@@ -1035,4 +1035,43 @@ pub fn sw_cancel_install(state: State<'_, AppState>) -> AppResult<()> {
 pub fn sw_history(state: State<'_, AppState>, limit: Option<u32>) -> AppResult<Vec<ActivityItem>> {
   state.session.require_active()?;
   report::history(&state.db(), report::SOFTWARE_OPERATION_TYPES, limit.unwrap_or(20).clamp(1, 200))
+}
+
+// ---------------------------------------------------------------------------
+// CSS Learning Library
+
+#[tauri::command]
+pub fn learn_state(state: State<'_, AppState>) -> AppResult<learning::LearningState> {
+  let user = state.session.require_active()?;
+  learning::state(&state.db(), user.id)
+}
+
+#[tauri::command]
+pub fn learn_update_progress(
+  state: State<'_, AppState>,
+  lesson_id: String,
+  lesson_version: i64,
+  last_step: i64,
+  completed: bool,
+) -> AppResult<()> {
+  let user = state.session.require_active()?;
+  learning::update_progress(&state.db(), user.id, &lesson_id, lesson_version, last_step, completed, auth::now())
+}
+
+#[tauri::command]
+pub fn learn_set_bookmark(state: State<'_, AppState>, lesson_id: String, bookmarked: bool) -> AppResult<()> {
+  let user = state.session.require_active()?;
+  learning::set_bookmark(&state.db(), user.id, &lesson_id, bookmarked)
+}
+
+#[tauri::command]
+pub fn learn_record_quiz(state: State<'_, AppState>, quiz_id: String, score: i64, max_score: i64, passed: bool) -> AppResult<()> {
+  let user = state.session.require_active()?;
+  learning::record_quiz(&state.db(), user.id, &quiz_id, score, max_score, passed)
+}
+
+#[tauri::command]
+pub fn learn_record_lab(state: State<'_, AppState>, lab_id: String, mistakes: i64, hints: i64, duration_s: i64) -> AppResult<()> {
+  let user = state.session.require_active()?;
+  learning::record_lab(&state.db(), user.id, &lab_id, mistakes, hints, duration_s)
 }

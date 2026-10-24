@@ -5,6 +5,7 @@ mod conversations;
 mod db;
 mod devices;
 mod error;
+mod learning;
 mod network;
 mod ralp;
 mod session;
@@ -124,6 +125,11 @@ pub fn run() {
       commands::sw_uninstall,
       commands::sw_cancel_install,
       commands::sw_history,
+      commands::learn_state,
+      commands::learn_update_progress,
+      commands::learn_set_bookmark,
+      commands::learn_record_quiz,
+      commands::learn_record_lab,
     ])
     .build(tauri::generate_context!())
     .expect("error while building tauri application")

@@ -5,6 +5,7 @@ import { useAuth } from "../auth/context";
 import { navItem, type PageId } from "../navigation";
 import ActivityLogsPage from "../pages/ActivityLogsPage";
 import AiTroubleshooterPage from "../pages/AiTroubleshooterPage";
+import LearningLibraryPage from "../pages/LearningLibraryPage";
 import DashboardPage from "../pages/DashboardPage";
 import NetworkCenterPage from "../pages/NetworkCenterPage";
 import PlaceholderPage from "../pages/PlaceholderPage";
@@ -35,6 +36,9 @@ function AppLayout() {
       break;
     case "software-center":
       content = <SoftwareCenterPage />;
+      break;
+    case "learning-library":
+      content = <LearningLibraryPage />;
       break;
     case "activity-logs":
       content = <ActivityLogsPage />;

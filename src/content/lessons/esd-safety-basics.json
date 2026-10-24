@@ -1,0 +1,106 @@
+{
+  "id": "esd-safety-basics",
+  "version": 1,
+  "title": "Electrical safety and ESD precautions",
+  "description": "Protect yourself from electric shock and protect components from static electricity before you open any computer.",
+  "category": "electrical-safety",
+  "difficulty": "beginner",
+  "durationMin": 20,
+  "objectives": [
+    "Explain why a computer must be disconnected from mains power before it is opened.",
+    "Describe what electrostatic discharge (ESD) is and why it damages components.",
+    "Use an anti-static wrist strap and mat correctly.",
+    "Handle components in a way that avoids ESD and physical damage.",
+    "Identify parts a computer technician must never open."
+  ],
+  "prerequisites": [],
+  "tools": ["Anti-static wrist strap", "Anti-static mat", "Anti-static (ESD) bags for spare parts"],
+  "safety": [
+    {
+      "level": "danger",
+      "text": "Never open a power supply unit (PSU), CRT monitor or microwave-type device. Their capacitors can hold a dangerous charge long after they are unplugged."
+    },
+    {
+      "level": "warning",
+      "text": "Mains electricity in the Philippines is 220 V AC. Always unplug the power cord before opening a computer — switching off is not enough."
+    },
+    {
+      "level": "caution",
+      "text": "Static discharges too small for you to feel can still damage or weaken electronic components."
+    }
+  ],
+  "steps": [
+    {
+      "title": "Shut down and unplug",
+      "body": "1. Shut down Windows normally and wait for the computer to turn off completely.\n2. Switch off the PSU using the switch on its back (marked **I/O**), if it has one.\n3. **Unplug the power cord** from the wall outlet or extension, and unplug any other cables connected to the computer.\n4. For laptops, unplug the charger and disconnect the battery if the manufacturer's service guide says to."
+    },
+    {
+      "title": "Drain the remaining power",
+      "body": "With the power cord unplugged, press and hold the computer's power button for about 5 seconds. This drains the small amount of power left in the motherboard's circuits.\n\nThe motherboard often has a light (LED) that stays on while it has standby power. Make sure it has gone out before you continue."
+    },
+    {
+      "title": "Understand electrostatic discharge",
+      "body": "Your body builds up static electricity when you walk, move on a chair or wear certain clothes, especially in dry, air-conditioned rooms. When you touch a component, that charge jumps to it in a tiny spark: an **electrostatic discharge (ESD)**.\n\nYou usually feel a discharge only when it is several thousand volts. Components can be damaged by much less. Damage is not always immediate: a part can be weakened and fail days or weeks later, which makes ESD problems hard to trace."
+    },
+    {
+      "title": "Ground yourself with a wrist strap",
+      "body": "1. Put the anti-static wrist strap on your wrist, with the metal plate touching your skin.\n2. Clip the other end to a grounding point: the anti-static mat's ground connector, or **bare, unpainted metal** of the computer case.\n3. Keep it on the whole time you handle components.\n\nA proper wrist strap has a built-in resistor (usually 1 MΩ) so charge drains slowly and safely. Never replace the cord with a plain wire."
+    },
+    {
+      "title": "Prepare a safe workspace",
+      "body": "- Work on an anti-static mat on a clean, dry, non-carpeted surface.\n- Remove rings, bracelets and watches; they can scratch parts or touch exposed contacts.\n- Keep drinks and liquids away from the work area.\n- Have enough light to see small screws and connectors clearly."
+    },
+    {
+      "title": "Handle components correctly",
+      "body": "- Hold boards and modules by their **edges**. Do not touch gold contacts, chips or CPU pins.\n- Keep spare and removed parts in their **anti-static bags** until you need them.\n- Put parts down on the anti-static mat, never on carpet, cloth or plastic.\n- Never slide a component across a surface or force it into a slot."
+    }
+  ],
+  "expectedResults": [
+    "The computer is fully disconnected from mains power and its standby LED is off.",
+    "You are wearing a wrist strap connected to a proper grounding point.",
+    "Components are handled by their edges and stored in anti-static bags."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Switching the computer off but leaving it plugged in.",
+      "why": "The PSU still supplies standby power to the motherboard, so parts can be damaged and you can be shocked.",
+      "fix": "Always unplug the power cord, then press the power button to drain remaining power."
+    },
+    {
+      "mistake": "Clipping the wrist strap to a painted surface or a plastic part.",
+      "why": "Paint and plastic do not conduct electricity, so the strap does nothing.",
+      "fix": "Clip it to bare, unpainted metal on the case or to the mat's ground point."
+    },
+    {
+      "mistake": "Placing a component on top of carpet or a cloth while working.",
+      "why": "Carpet and many fabrics build up static charge easily.",
+      "fix": "Use the anti-static mat or keep the part in its anti-static bag."
+    },
+    {
+      "mistake": "Opening a power supply to look for a fault.",
+      "why": "Capacitors inside can hold a lethal charge even when unplugged.",
+      "fix": "Replace a faulty PSU as a whole unit. Repairs are for qualified electronics technicians only."
+    }
+  ],
+  "knowledgeChecks": [
+    {
+      "question": "Why press the power button after unplugging the computer?",
+      "answer": "To drain the power left in the motherboard's circuits, so no standby power remains while you work."
+    },
+    {
+      "question": "Where should you clip an anti-static wrist strap?",
+      "answer": "To the anti-static mat's grounding point or to bare, unpainted metal on the computer case."
+    },
+    {
+      "question": "Can ESD damage a component even if you did not feel a spark?",
+      "answer": "Yes. Damaging discharges are often far below the level you can feel, and the damage may only show up later."
+    }
+  ],
+  "quizId": "esd-safety-basics-quiz",
+  "references": [
+    "Your motherboard's and computer's user manual (safety section).",
+    "TESDA Computer Systems Servicing NC II competency standard: occupational health and safety."
+  ],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

@@ -1,0 +1,53 @@
+{
+  "id": "pc-major-components-quiz",
+  "lessonId": "pc-major-components",
+  "title": "Major PC components quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "match",
+      "prompt": "Match each component to its job.",
+      "pairs": [
+        { "left": "CPU", "right": "Carries out program instructions" },
+        { "left": "RAM", "right": "Holds data the computer is using right now" },
+        { "left": "SSD", "right": "Keeps files when the power is off" },
+        { "left": "PSU", "right": "Converts AC mains power to DC for the parts" },
+        { "left": "Motherboard", "right": "Connects every other component" }
+      ],
+      "explanation": "Knowing what each part does is the starting point for troubleshooting."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which statement about RAM is true?",
+      "choices": [
+        "It keeps Windows installed when the computer is off",
+        "It is volatile: its contents are lost when power is removed",
+        "It is slower than a hard disk drive",
+        "Any RAM module fits any motherboard"
+      ],
+      "correct": 1,
+      "explanation": "RAM is fast, temporary memory. DDR generations are not interchangeable."
+    },
+    {
+      "kind": "single",
+      "prompt": "A computer has a dedicated graphics card. Where should the monitor be connected?",
+      "choices": ["To the motherboard's video port", "To the graphics card's video port", "Either; both always work", "To a USB port"],
+      "correct": 1,
+      "explanation": "Most motherboards turn off their own video output when a dedicated card is installed."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which of these are types of storage? Select all that apply.",
+      "choices": ["HDD", "DIMM", "SATA SSD", "M.2 NVMe SSD", "PSU"],
+      "correct": [0, 2, 3],
+      "explanation": "A DIMM is a RAM module and a PSU supplies power; neither stores files."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which connector supplies power to the motherboard itself?",
+      "choices": ["SATA power", "24-pin ATX", "PCIe 8-pin", "Molex"],
+      "correct": 1,
+      "explanation": "The 24-pin ATX connector powers the motherboard; the separate 4+4-pin EPS connector powers the CPU."
+    }
+  ]
+}

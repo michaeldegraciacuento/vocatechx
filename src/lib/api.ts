@@ -448,6 +448,29 @@ export type InstallEvent =
   | { type: "step"; index: number; step: InstallStep; message: string }
   | { type: "finished"; index: number; result: InstallResult };
 
+// CSS Learning Library (progress only; the lessons are bundled in src/content)
+
+export type LessonProgress = {
+  lessonId: string;
+  lessonVersion: number;
+  lastStep: number;
+  startedAt: number;
+  completedAt: number | null;
+};
+
+export type QuizBest = {
+  quizId: string;
+  bestScore: number;
+  maxScore: number;
+  passed: boolean;
+  attempts: number;
+  lastAttemptAt: number;
+};
+
+export type LabBest = { labId: string; completions: number; bestMistakes: number; lastCompletedAt: number };
+
+export type LearningState = { progress: LessonProgress[]; bookmarks: string[]; quizzes: QuizBest[]; labs: LabBest[] };
+
 export function isAppError(error: unknown): error is AppError {
   return typeof error === "object" && error !== null && "code" in error && "message" in error;
 }
@@ -545,4 +568,13 @@ export const api = {
   },
   swCancelInstall: () => invoke<void>("sw_cancel_install"),
   swHistory: (limit?: number) => invoke<ActivityItem[]>("sw_history", { limit }),
+
+  learnState: () => invoke<LearningState>("learn_state"),
+  learnUpdateProgress: (lessonId: string, lessonVersion: number, lastStep: number, completed: boolean) =>
+    invoke<void>("learn_update_progress", { lessonId, lessonVersion, lastStep, completed }),
+  learnSetBookmark: (lessonId: string, bookmarked: boolean) => invoke<void>("learn_set_bookmark", { lessonId, bookmarked }),
+  learnRecordQuiz: (quizId: string, score: number, maxScore: number, passed: boolean) =>
+    invoke<void>("learn_record_quiz", { quizId, score, maxScore, passed }),
+  learnRecordLab: (labId: string, mistakes: number, hints: number, durationS: number) =>
+    invoke<void>("learn_record_lab", { labId, mistakes, hints, durationS }),
 };

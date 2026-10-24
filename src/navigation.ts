@@ -39,7 +39,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "printer-devices", label: "Printer & Devices", icon: Printer, description: "Diagnose printers, the print spooler, stuck jobs, drivers, and connected hardware.", available: true },
   { id: "windows-repair", label: "Windows Repair", icon: Wrench, description: "Run guided Windows maintenance and repair operations.", available: false },
   { id: "software-center", label: "Software Center", icon: Package, description: "Install essential apps from your application folder in one go.", available: true },
-  { id: "learning-library", label: "CSS Learning Library", icon: BookOpen, description: "Practical computer systems servicing references.", available: false },
+  { id: "learning-library", label: "CSS Learning Library", icon: BookOpen, description: "Offline Computer Systems Servicing lessons, quizzes and progress.", available: true },
   { id: "activity-logs", label: "Activity Logs", icon: History, description: "History of diagnostic and repair operations on this computer.", available: true },
   { id: "settings", label: "Settings", icon: Settings, description: "Application preferences and account options.", available: false },
 ];

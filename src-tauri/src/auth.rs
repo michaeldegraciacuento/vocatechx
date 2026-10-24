@@ -286,7 +286,7 @@ mod tests {
     db::initialize(&conn).unwrap();
     let count: i64 = conn.query_row("SELECT COUNT(*) FROM users", [], |r| r.get(0)).unwrap();
     assert_eq!(count, 1);
-    assert_eq!(db::schema_version(&conn).unwrap(), 2);
+    assert_eq!(db::schema_version(&conn).unwrap(), 4);
   }
 
   #[test]

@@ -58,6 +58,11 @@ const COMMANDS: &[&str] = &[
   "sw_uninstall",
   "sw_cancel_install",
   "sw_history",
+  "learn_state",
+  "learn_update_progress",
+  "learn_set_bookmark",
+  "learn_record_quiz",
+  "learn_record_lab",
 ];
 
 fn main() {

@@ -1,0 +1,68 @@
+{
+  "id": "ram-remove-install-quiz",
+  "lessonId": "ram-remove-install",
+  "title": "Desktop RAM quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "A new RAM module will not go into the slot, even with firm pressure. What should you do?",
+      "choices": [
+        "Press harder until it clicks",
+        "Stop, check the notch lines up with the slot key and that it is the right DDR generation",
+        "File the notch so it fits",
+        "Try a different slot and press harder there"
+      ],
+      "correct": 1,
+      "explanation": "A module that does not fit is the wrong way round or the wrong type. Forcing it damages the slot or module."
+    },
+    {
+      "kind": "order",
+      "prompt": "Put the steps for installing a module in order.",
+      "items": [
+        "Unplug the computer and put on a grounded wrist strap",
+        "Open the slot's retention clip(s)",
+        "Line up the notch with the slot key",
+        "Press evenly until the clip(s) click closed",
+        "Power on and check the memory in Task Manager"
+      ],
+      "explanation": "Safety first, then open the clips, align, seat fully and verify."
+    },
+    {
+      "kind": "single",
+      "prompt": "You are installing two matching modules on a four-slot board. Which slots should you use?",
+      "choices": [
+        "Any two slots",
+        "The two slots nearest the CPU",
+        "The slots the manual lists for dual-channel, often A2 and B2",
+        "The two slots furthest from the CPU"
+      ],
+      "correct": 2,
+      "explanation": "The manual defines the dual-channel slots; neighbouring slots often run in single-channel mode."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which signs show a module is installed correctly? Select all that apply.",
+      "choices": [
+        "Both retention clips have clicked closed",
+        "The module sits level along its length",
+        "Some gold contacts are still visible above the slot",
+        "Windows shows the expected total memory"
+      ],
+      "correct": [0, 1, 3],
+      "explanation": "Visible gold contacts mean the module is not fully seated."
+    },
+    {
+      "kind": "single",
+      "prompt": "After installing new DDR5 memory, the screen stays black for about a minute on the first start. What is the most likely reason?",
+      "choices": [
+        "The memory is faulty",
+        "The motherboard is training (testing) the new memory",
+        "The graphics card is broken",
+        "Windows needs to be reinstalled"
+      ],
+      "correct": 1,
+      "explanation": "Memory training can make the first start after a RAM change take a minute or more. Wait before troubleshooting."
+    }
+  ]
+}

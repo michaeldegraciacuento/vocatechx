@@ -1,0 +1,98 @@
+{
+  "id": "ram-remove-install",
+  "version": 1,
+  "title": "Remove and install desktop RAM",
+  "description": "Safely remove a memory module and install one correctly, then confirm Windows sees the new memory.",
+  "category": "assembly-disassembly",
+  "difficulty": "beginner",
+  "durationMin": 25,
+  "objectives": [
+    "Check that a RAM module is compatible with the motherboard before installing it.",
+    "Release the retention clips and remove a module without damaging the slot.",
+    "Align the key notch and seat a module fully.",
+    "Use the motherboard manual to choose the right slots for dual-channel memory.",
+    "Confirm the installed memory in Windows."
+  ],
+  "prerequisites": ["esd-safety-basics", "pc-major-components"],
+  "tools": ["Phillips screwdriver", "Anti-static wrist strap", "Anti-static mat", "Motherboard manual"],
+  "safety": [
+    { "level": "warning", "text": "Unplug the computer, drain remaining power and wear a grounded wrist strap before touching memory." },
+    { "level": "caution", "text": "Hold modules by their edges. Never touch the gold contacts or the chips." },
+    { "level": "caution", "text": "Never force a module. If it does not go in with firm, even pressure once the notch is aligned, stop and check it is the right type and the right way round." }
+  ],
+  "steps": [
+    {
+      "title": "Check compatibility first",
+      "body": "Before you open anything, confirm the new module matches the motherboard:\n\n- **Generation:** DDR4 and DDR5 are physically different and will not fit each other's slots.\n- **Form factor:** desktops use full-length **DIMMs**; laptops use shorter **SO-DIMMs**.\n- **Supported capacity and speed:** listed in the motherboard manual or on the manufacturer's website.\n\nWhen adding memory, modules that match the existing ones (same capacity and speed) are the most reliable."
+    },
+    {
+      "title": "Prepare the computer",
+      "body": "Shut down, unplug the power cord, press the power button for about 5 seconds, and put on your wrist strap. Lay the case on its side on the anti-static mat and remove the side panel."
+    },
+    {
+      "title": "Locate the memory slots",
+      "body": "The RAM slots are the long slots beside the CPU cooler, usually 2 or 4 of them. Each has a **retention clip** at one or both ends.\n\nSome motherboards have clips at both ends; many newer boards have a clip at only one end and a fixed hook at the other. Check your manual."
+    },
+    {
+      "title": "Remove a module",
+      "body": "1. Push the retention clip (or both clips) **outwards and down**. The module pops up slightly.\n2. Hold the module by its top edge and lift it **straight up** out of the slot.\n3. Put it in an anti-static bag.\n\nIf the cooler or a graphics card is in the way, take care not to bump it; do not lever the module against other parts."
+    },
+    {
+      "title": "Line up the key notch",
+      "body": "Look at the gold contact edge: there is one **notch** that is off-centre. The slot has a matching **key**. Turn the module so the notch lines up with the key.\n\nIf they do not line up either way round, the module is the wrong type for this slot. Do not try to insert it.",
+      "image": {
+        "src": "dimm-notch.svg",
+        "alt": "DDR4 and DDR5 modules, each with its key notch at a different position along the gold contact edge.",
+        "caption": "The notch position differs between memory generations, so each module only fits its own slot type."
+      }
+    },
+    {
+      "title": "Choose the right slot",
+      "body": "With two modules, install them in the slots the manual names for **dual-channel** mode, often labelled **A2** and **B2** (frequently the 2nd and 4th slots counting from the CPU). With one module, use the slot the manual recommends, usually A2.\n\nThe wrong slots still work but can halve memory bandwidth."
+    },
+    {
+      "title": "Seat the module",
+      "body": "1. Open the slot's clip(s).\n2. Lower the module straight down into the slot with the notch aligned.\n3. Press firmly with both thumbs on the top edge, evenly at both ends, until the clip(s) **click closed** on their own.\n4. Check both ends: the module must sit level and fully inserted, with no gold showing."
+    },
+    {
+      "title": "Close up and confirm",
+      "body": "Refit the side panel, reconnect the cables and power on.\n\nThe first start after a memory change can take longer than usual, especially with DDR5, while the motherboard tests the new memory (memory training). Wait a minute or two before deciding it does not work.\n\nIn Windows, open **Task Manager → Performance → Memory** and check the total size and the number of slots used."
+    }
+  ],
+  "expectedResults": [
+    "The module is seated level with both ends locked by the retention clips.",
+    "The computer starts normally, and Windows shows the expected amount of memory.",
+    "Task Manager shows the expected number of slots in use."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Module only half inserted, with one clip closed and one open.",
+      "why": "The contacts on one end do not touch, so the computer may not start or may show less memory.",
+      "fix": "Open both clips, remove the module and press it in again evenly until both ends click."
+    },
+    {
+      "mistake": "Forcing a module that will not go in.",
+      "why": "It is the wrong generation or turned the wrong way. Forcing it can break the slot or the module.",
+      "fix": "Remove it, check the notch against the slot key and confirm the DDR generation."
+    },
+    {
+      "mistake": "Installing two modules in neighbouring slots.",
+      "why": "On most boards this runs them in single-channel mode, lowering performance.",
+      "fix": "Use the slots the manual lists for dual-channel, often A2 and B2."
+    },
+    {
+      "mistake": "Deciding the computer is broken because the first start is slow.",
+      "why": "Memory training after a RAM change can make the first start take a minute or more.",
+      "fix": "Wait at least two minutes before troubleshooting."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "How do you know a module is fully seated?", "answer": "Both ends are level, no gold contacts show, and the retention clip(s) have clicked closed." },
+    { "question": "Can a DDR4 module be installed in a DDR5 slot?", "answer": "No. The key notches are in different positions, so it does not fit and must not be forced." },
+    { "question": "Where do you find which slots to use for dual-channel memory?", "answer": "In the motherboard manual. Many boards use slots A2 and B2." }
+  ],
+  "quizId": "ram-remove-install-quiz",
+  "references": ["Your motherboard manual: memory installation section and supported memory list."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

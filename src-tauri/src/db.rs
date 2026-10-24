@@ -82,6 +82,49 @@ const MIGRATIONS: &[&str] = &[
   );
   CREATE INDEX idx_ai_messages_conversation ON ai_messages (conversation_id, id);
   "#,
+  // v3: CSS Learning Library progress, per account
+  r#"
+  CREATE TABLE learning_progress (
+    user_id        INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    lesson_id      TEXT    NOT NULL CHECK (length(lesson_id) BETWEEN 1 AND 64),
+    lesson_version INTEGER NOT NULL CHECK (lesson_version >= 1),
+    last_step      INTEGER NOT NULL DEFAULT 0 CHECK (last_step >= 0),
+    started_at     INTEGER NOT NULL DEFAULT (unixepoch()),
+    completed_at   INTEGER CHECK (completed_at IS NULL OR completed_at >= started_at),
+    PRIMARY KEY (user_id, lesson_id)
+  );
+
+  CREATE TABLE learning_bookmarks (
+    user_id    INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    lesson_id  TEXT    NOT NULL CHECK (length(lesson_id) BETWEEN 1 AND 64),
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    PRIMARY KEY (user_id, lesson_id)
+  );
+
+  CREATE TABLE quiz_attempts (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    quiz_id    TEXT    NOT NULL CHECK (length(quiz_id) BETWEEN 1 AND 64),
+    score      INTEGER NOT NULL CHECK (score >= 0),
+    max_score  INTEGER NOT NULL CHECK (max_score >= 1 AND score <= max_score),
+    passed     INTEGER NOT NULL CHECK (passed IN (0, 1)),
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+  );
+  CREATE INDEX idx_quiz_attempts_user ON quiz_attempts (user_id, quiz_id);
+  "#,
+  // v4: 3D Hardware Lab lessons completed, per account
+  r#"
+  CREATE TABLE lab_attempts (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    lab_id     TEXT    NOT NULL CHECK (length(lab_id) BETWEEN 1 AND 64),
+    mistakes   INTEGER NOT NULL CHECK (mistakes >= 0),
+    hints      INTEGER NOT NULL CHECK (hints >= 0),
+    duration_s INTEGER NOT NULL CHECK (duration_s >= 0),
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+  );
+  CREATE INDEX idx_lab_attempts_user ON lab_attempts (user_id, lab_id);
+  "#,
 ];
 
 pub fn open(path: &Path) -> AppResult<Connection> {

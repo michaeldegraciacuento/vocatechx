@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-learn-state"
+description = "Enables the learn_state command without any pre-configured scope."
+commands.allow = ["learn_state"]
+
+[[permission]]
+identifier = "deny-learn-state"
+description = "Denies the learn_state command without any pre-configured scope."
+commands.deny = ["learn_state"]

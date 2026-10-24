@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-learn-record-lab"
+description = "Enables the learn_record_lab command without any pre-configured scope."
+commands.allow = ["learn_record_lab"]
+
+[[permission]]
+identifier = "deny-learn-record-lab"
+description = "Denies the learn_record_lab command without any pre-configured scope."
+commands.deny = ["learn_record_lab"]

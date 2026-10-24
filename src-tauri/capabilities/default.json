@@ -63,6 +63,11 @@
     "allow-sw-install",
     "allow-sw-uninstall",
     "allow-sw-cancel-install",
-    "allow-sw-history"
+    "allow-sw-history",
+    "allow-learn-state",
+    "allow-learn-update-progress",
+    "allow-learn-set-bookmark",
+    "allow-learn-record-quiz",
+    "allow-learn-record-lab"
   ]
 }

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-learn-set-bookmark"
+description = "Enables the learn_set_bookmark command without any pre-configured scope."
+commands.allow = ["learn_set_bookmark"]
+
+[[permission]]
+identifier = "deny-learn-set-bookmark"
+description = "Denies the learn_set_bookmark command without any pre-configured scope."
+commands.deny = ["learn_set_bookmark"]

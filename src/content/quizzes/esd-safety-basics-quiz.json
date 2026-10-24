@@ -1,0 +1,69 @@
+{
+  "id": "esd-safety-basics-quiz",
+  "lessonId": "esd-safety-basics",
+  "title": "Electrical safety and ESD quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "You need to replace a RAM module. What must you do first?",
+      "choices": [
+        "Shut down Windows and open the side panel",
+        "Shut down, unplug the power cord, then press the power button to drain power",
+        "Leave the computer running so you can see when the new RAM works",
+        "Switch off the monitor"
+      ],
+      "correct": 1,
+      "explanation": "The computer must be disconnected from mains power, and remaining standby power drained, before you touch anything inside."
+    },
+    {
+      "kind": "single",
+      "prompt": "Where should the anti-static wrist strap be connected?",
+      "choices": [
+        "A painted part of the case",
+        "The plastic front panel",
+        "Bare, unpainted metal of the case or the mat's grounding point",
+        "Nowhere; wearing it is enough"
+      ],
+      "correct": 2,
+      "explanation": "The strap must connect to something conductive and grounded. Paint and plastic do not conduct."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which of these are correct ways to handle components? Select all that apply.",
+      "choices": [
+        "Hold modules and cards by their edges",
+        "Keep spare parts in anti-static bags until needed",
+        "Touch the gold contacts to check they are clean",
+        "Put parts down on carpet while you work",
+        "Place parts on an anti-static mat"
+      ],
+      "correct": [0, 1, 4],
+      "explanation": "Avoid touching contacts and never put parts on carpet, which builds up static."
+    },
+    {
+      "kind": "single",
+      "prompt": "A customer's power supply is dead. What should you do?",
+      "choices": [
+        "Open it and look for a burnt fuse",
+        "Replace the whole power supply unit",
+        "Bridge the power switch with a wire",
+        "Open it, but only after unplugging it for a minute"
+      ],
+      "correct": 1,
+      "explanation": "Capacitors in a PSU can hold a dangerous charge even when unplugged. Technicians replace PSUs; they do not open them."
+    },
+    {
+      "kind": "order",
+      "prompt": "Put these preparation steps in the correct order.",
+      "items": [
+        "Shut down Windows",
+        "Unplug the power cord",
+        "Press and hold the power button for about 5 seconds",
+        "Put on the wrist strap and clip it to bare metal",
+        "Open the case"
+      ],
+      "explanation": "Remove mains power first, drain what remains, ground yourself, and only then open the case."
+    }
+  ]
+}
