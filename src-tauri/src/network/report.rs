@@ -19,6 +19,9 @@ pub const DEVICE_OPERATION_TYPES: &[&str] = &["printer_repair", "spooler_repair"
 /// Operation types written by the Software Center.
 pub const SOFTWARE_OPERATION_TYPES: &[&str] = &["software_install", "software_uninstall"];
 
+/// Operation types written by Windows Repair.
+pub const WINDOWS_REPAIR_TYPES: &[&str] = &[crate::windows_repair::OPERATION_TYPE];
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Level {
   Info,
@@ -61,7 +64,7 @@ pub struct NewRun<'a> {
 }
 
 pub fn record(conn: &Connection, run: NewRun<'_>) -> AppResult<i64> {
-  debug_assert!([OPERATION_TYPES, DEVICE_OPERATION_TYPES, SOFTWARE_OPERATION_TYPES].iter().any(|types| types.contains(&run.operation_type)));
+  debug_assert!([OPERATION_TYPES, DEVICE_OPERATION_TYPES, SOFTWARE_OPERATION_TYPES, WINDOWS_REPAIR_TYPES].iter().any(|types| types.contains(&run.operation_type)));
   let tx = conn.unchecked_transaction()?;
   tx.execute(
     "INSERT INTO operation_runs (operation_type, title, status, summary, started_at, finished_at, user_id)

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-wr-report"
+description = "Enables the wr_report command without any pre-configured scope."
+commands.allow = ["wr_report"]
+
+[[permission]]
+identifier = "deny-wr-report"
+description = "Denies the wr_report command without any pre-configured scope."
+commands.deny = ["wr_report"]

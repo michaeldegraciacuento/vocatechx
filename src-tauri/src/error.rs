@@ -31,6 +31,10 @@ pub enum AppError {
   #[error("{0}")]
   Software(String),
 
+  /// A Windows Repair operation that could not run, described for the user.
+  #[error("{0}")]
+  Repair(String),
+
   #[error("A database error occurred. Please restart VocaTechX and try again.")]
   Database(#[from] rusqlite::Error),
 
@@ -53,6 +57,7 @@ impl AppError {
       Self::Ai(_) => "ai",
       Self::Network(_) => "network",
       Self::Software(_) => "software",
+      Self::Repair(_) => "repair",
       Self::Database(_) => "database",
       Self::Internal(_) => "internal",
     }

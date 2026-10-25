@@ -69,6 +69,11 @@
     "allow-learn-update-progress",
     "allow-learn-set-bookmark",
     "allow-learn-record-quiz",
-    "allow-learn-record-lab"
+    "allow-learn-record-lab",
+    "allow-wr-status",
+    "allow-wr-run",
+    "allow-wr-history",
+    "allow-wr-report",
+    "allow-wr-export-report"
   ]
 }

@@ -448,6 +448,75 @@ export type InstallEvent =
   | { type: "step"; index: number; step: InstallStep; message: string }
   | { type: "finished"; index: number; result: InstallResult };
 
+// Windows Repair
+
+export type RepairId =
+  | "dism-restore"
+  | "sfc"
+  | "chkdsk-scan"
+  | "memory-test"
+  | "wu-reset"
+  | "wu-cache"
+  | "wu-services"
+  | "restore-point"
+  | "system-restore"
+  | "advanced-startup"
+  | "safe-mode"
+  | "safe-mode-off"
+  | "temp-files"
+  | "optimize-drives"
+  | "icon-cache"
+  | "store-cache"
+  | "full-repair";
+
+export type WindowsRepairOutcome = "success" | "repaired" | "issues" | "failed" | "scheduled" | "started" | "stillRunning";
+
+export type RepairResult = {
+  repair: RepairId;
+  title: string;
+  outcome: WindowsRepairOutcome;
+  summary: string;
+  details: string[];
+  restartRecommended: boolean;
+  steps: RepairResult[];
+};
+
+export type RepairEvent =
+  | { type: "step"; index: number; total: number; title: string }
+  | { type: "progress"; percent: number }
+  | { type: "line"; text: string };
+
+/** Each value is null when Windows did not answer (e.g. without administrator rights). */
+export type WindowsStatus = {
+  productName: string | null;
+  displayVersion: string | null;
+  build: number | null;
+  ubr: number | null;
+  rebootPending: boolean | null;
+  inSafeMode: boolean | null;
+  freeBytes: number | null;
+  totalBytes: number | null;
+  diskHealth: string | null;
+  diskMedia: string | null;
+  lastRestorePoint: number | null;
+  restorePointCount: number | null;
+  memoryTestAt: number | null;
+  memoryTestPassed: boolean | null;
+};
+
+export type LastRepairRun = { id: number; status: string; summary: string | null; finishedAt: number | null };
+
+export type WindowsRepairStatus = {
+  drive: string;
+  elevated: boolean;
+  running: boolean;
+  safeModeSet: boolean | null;
+  windows: WindowsStatus;
+  lastSfc: LastRepairRun | null;
+  lastDism: LastRepairRun | null;
+  lastChkdsk: LastRepairRun | null;
+};
+
 // CSS Learning Library (progress only; the lessons are bundled in src/content)
 
 export type LessonProgress = {
@@ -568,6 +637,18 @@ export const api = {
   },
   swCancelInstall: () => invoke<void>("sw_cancel_install"),
   swHistory: (limit?: number) => invoke<ActivityItem[]>("sw_history", { limit }),
+
+  wrStatus: () => invoke<WindowsRepairStatus>("wr_status"),
+  wrRun: (repair: RepairId, onEvent: (event: RepairEvent) => void) => {
+    const channel = new Channel<RepairEvent>();
+    channel.onmessage = onEvent;
+    return invoke<RepairResult>("wr_run", { repair, onEvent: channel });
+  },
+  wrHistory: (limit?: number) => invoke<ActivityItem[]>("wr_history", { limit }),
+  wrReport: (runId: number) => invoke<ReportDetail>("wr_report", { runId }),
+  /** Returns the saved path, or null if the save dialog was cancelled. */
+  wrExportReport: (runId: number, format: "txt" | "pdf") =>
+    invoke<string | null>("wr_export_report", { runId, format, utcOffsetMinutes: -new Date().getTimezoneOffset() }),
 
   learnState: () => invoke<LearningState>("learn_state"),
   learnUpdateProgress: (lessonId: string, lessonVersion: number, lastStep: number, completed: boolean) =>

@@ -1,13 +1,28 @@
 import { FileDown, FileText, History } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ActivityList } from "../../components/ActivityList";
-import { api } from "../../lib/api";
+import { api, type ActivityItem, type ReportDetail } from "../../lib/api";
 import { formatRelativeTime, humanizeIdentifier } from "../../lib/format";
 import { useBackendAction } from "../../lib/useBackendAction";
 import { useBackendData } from "../../lib/useBackendData";
 import { EmptyState, ErrorNote, Panel, Spinner, secondaryButtonClass } from "../network/ui";
 
-const fetchHistory = () => api.devHistory(100);
+/** Where a module's history comes from. Functions must be stable (module level). */
+export type HistorySource = {
+  history: () => Promise<ActivityItem[]>;
+  report: (runId: number) => Promise<ReportDetail>;
+  exportReport: (runId: number, format: "txt" | "pdf") => Promise<string | null>;
+  description: string;
+  empty: string;
+};
+
+const DEVICE_HISTORY: HistorySource = {
+  history: () => api.devHistory(100),
+  report: api.devReport,
+  exportReport: api.devExportReport,
+  description: "Printer and device diagnostics and repairs, saved on this computer.",
+  empty: "Printer and device repairs you run will be recorded here and can be exported as a report.",
+};
 
 const LEVEL_STYLE = {
   info: "border-l-[#cbd5e1]",
@@ -15,9 +30,9 @@ const LEVEL_STYLE = {
   error: "border-l-[#dc2626]",
 } as const;
 
-function ReportView({ runId }: { runId: number }) {
-  const report = useBackendAction(api.devReport);
-  const exporter = useBackendAction(api.devExportReport);
+function ReportView({ runId, source }: { runId: number; source: HistorySource }) {
+  const report = useBackendAction(source.report);
+  const exporter = useBackendAction(source.exportReport);
   const [saved, setSaved] = useState<string | null>(null);
   const load = report.run;
 
@@ -70,10 +85,10 @@ function ReportView({ runId }: { runId: number }) {
   );
 }
 
-/** Repair History & Reports: printer and device operations recorded on this
- *  computer, exportable as TXT or PDF. Populated once repairs run (Phase 2+). */
-export function HistoryTab() {
-  const history = useBackendData(fetchHistory);
+/** Repair History & Reports: a module's operations recorded on this computer,
+ *  exportable as TXT or PDF. Printer & Devices by default. */
+export function HistoryTab({ source = DEVICE_HISTORY }: { source?: HistorySource }) {
+  const history = useBackendData(source.history);
   const [selected, setSelected] = useState<number | null>(null);
   const items = history.data ?? [];
 
@@ -81,13 +96,13 @@ export function HistoryTab() {
     <div className="grid gap-5 lg:grid-cols-5">
       <Panel
         title="Repair history"
-        description="Printer and device diagnostics and repairs, saved on this computer."
+        description={source.description}
         className="min-w-0 lg:col-span-2"
       >
         {history.loading || history.error || items.length === 0 ? (
           items.length === 0 && !history.loading && !history.error ? (
             <EmptyState icon={History} title="No operations yet">
-              Printer and device repairs you run will be recorded here and can be exported as a report.
+              {source.empty}
             </EmptyState>
           ) : (
             <ActivityList items={history.data} loading={history.loading} error={history.error} />
@@ -127,7 +142,7 @@ export function HistoryTab() {
       </Panel>
       <Panel title="Report" className="min-w-0 lg:col-span-3">
         {selected !== null ? (
-          <ReportView key={selected} runId={selected} />
+          <ReportView key={selected} runId={selected} source={source} />
         ) : (
           <EmptyState icon={History} title="Select an entry">
             Choose an entry to see its details and export it as a TXT or PDF report.

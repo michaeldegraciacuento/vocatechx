@@ -29,6 +29,7 @@ use crate::software::{
   library::{AppSetup, InstallerType, PendingInstaller},
 };
 use crate::system_info::SystemOverview;
+use crate::windows_repair::{self, status::RepairStatus as WindowsRepairStatus, RepairEvent, RepairId, RepairResult};
 use crate::{auth, db, learning, AppState};
 
 /// Runs slow work (password hashing, system queries) off the main thread so
@@ -1074,4 +1075,136 @@ pub fn learn_record_quiz(state: State<'_, AppState>, quiz_id: String, score: i64
 pub fn learn_record_lab(state: State<'_, AppState>, lab_id: String, mistakes: i64, hints: i64, duration_s: i64) -> AppResult<()> {
   let user = state.session.require_active()?;
   learning::record_lab(&state.db(), user.id, &lab_id, mistakes, hints, duration_s)
+}
+
+// ---------------------------------------------------------------------------
+// Windows Repair
+
+#[tauri::command]
+pub async fn wr_status(app: AppHandle) -> AppResult<WindowsRepairStatus> {
+  run_blocking(app, |state| {
+    state.session.require_active()?;
+    let windows = windows_repair::status::query_windows();
+    let safe_mode_set = windows_repair::status::safe_mode_set();
+    let db = state.db();
+    let last = |repair| windows_repair::status::last_run(&db, repair);
+    Ok(WindowsRepairStatus {
+      drive: windows_repair::system_drive(),
+      elevated: network::sys::is_elevated(),
+      running: state.repair.running(),
+      safe_mode_set,
+      windows,
+      last_sfc: last(RepairId::Sfc),
+      last_dism: last(RepairId::DismRestore),
+      last_chkdsk: last(RepairId::ChkdskScan),
+    })
+  })
+  .await
+}
+
+/// Runs one repair (or the full repair sequence), streaming the tool's output,
+/// and records each repair in the history.
+#[tauri::command]
+pub async fn wr_run(app: AppHandle, repair: RepairId, on_event: Channel<RepairEvent>) -> AppResult<RepairResult> {
+  run_blocking(app, move |state| {
+    let user = state.session.require_active()?;
+    let steps: &[RepairId] = if repair == RepairId::FullRepair { &windows_repair::FULL_REPAIR_STEPS } else { std::slice::from_ref(&repair) };
+    if steps.iter().any(|s| s.needs_admin()) && !network::sys::is_elevated() {
+      return Err(AppError::Repair("This repair needs administrator rights. Close VocaTechX and open it with \"Run as administrator\".".into()));
+    }
+    let Some(_lock) = state.repair.begin() else {
+      return Err(AppError::Repair("Another repair is still running. Wait for it to finish first.".into()));
+    };
+    let started_at = auth::now();
+    let result = windows_repair::run(repair, &|event| {
+      let _ = on_event.send(event);
+    });
+    let recorded: Vec<&RepairResult> = if result.steps.is_empty() { vec![&result] } else { result.steps.iter().collect() };
+    for r in recorded {
+      record_repair(state, user.id, started_at, r);
+    }
+    Ok(result)
+  })
+  .await
+}
+
+/// Most tools print hundreds of lines; the report keeps the end, where the result is.
+const REPAIR_LOG_LINES: usize = 300;
+
+fn record_repair(state: &AppState, user_id: i64, started_at: i64, result: &RepairResult) {
+  let (status, label) = result.outcome.history();
+  let level = if status == "success" { Level::Info } else { Level::Error };
+  let mut logs = vec![LogLine::new(level, format!("Result: {label}")), LogLine::new(level, result.summary.clone())];
+  if result.restart_recommended {
+    logs.push(LogLine::new(Level::Warning, "Restart Windows to finish."));
+  }
+  let skip = result.details.len().saturating_sub(REPAIR_LOG_LINES);
+  if skip > 0 {
+    logs.push(LogLine::new(Level::Info, format!("({skip} earlier output lines left out)")));
+  }
+  logs.extend(result.details.iter().skip(skip).map(|l| LogLine::new(Level::Info, l.clone())));
+  if let Err(e) = report::record(
+    &state.db(),
+    report::NewRun {
+      user_id,
+      operation_type: windows_repair::OPERATION_TYPE,
+      title: result.title,
+      status,
+      summary: &result.summary,
+      started_at,
+      finished_at: auth::now(),
+      logs: &logs,
+    },
+  ) {
+    log::warn!("could not record the repair {}: {e:?}", result.title);
+  }
+}
+
+#[tauri::command]
+pub fn wr_history(state: State<'_, AppState>, limit: Option<u32>) -> AppResult<Vec<ActivityItem>> {
+  state.session.require_active()?;
+  report::history(&state.db(), report::WINDOWS_REPAIR_TYPES, limit.unwrap_or(50).clamp(1, 200))
+}
+
+#[tauri::command]
+pub fn wr_report(state: State<'_, AppState>, run_id: i64) -> AppResult<ReportDetail> {
+  state.session.require_active()?;
+  report::detail(&state.db(), report::WINDOWS_REPAIR_TYPES, run_id)
+}
+
+/// Saves a Windows Repair report where the user chooses. Returns the saved
+/// path, or `None` if the save dialog was cancelled.
+#[tauri::command]
+pub async fn wr_export_report(app: AppHandle, run_id: i64, format: ExportFormat, utc_offset_minutes: i32) -> AppResult<Option<String>> {
+  let handle = app.clone();
+  run_blocking(app, move |state| {
+    use tauri_plugin_dialog::DialogExt;
+    state.session.require_active()?;
+    let detail = report::detail(&state.db(), report::WINDOWS_REPAIR_TYPES, run_id)?;
+    let offset = utc_offset_minutes.clamp(-14 * 60, 14 * 60);
+    let text = report::render_text(&detail, "Windows Repair", network::computer_name().as_deref(), offset);
+    let (extension, filter, bytes) = match format {
+      ExportFormat::Txt => ("txt", "Text file", text.into_bytes()),
+      ExportFormat::Pdf => ("pdf", "PDF document", report::render_pdf(&text)),
+    };
+    let Some(picked) = handle
+      .dialog()
+      .file()
+      .set_title("Save Windows repair report")
+      .set_file_name(format!("VocaTechX-repair-report-{run_id}.{extension}"))
+      .add_filter(filter, &[extension])
+      .blocking_save_file()
+    else {
+      return Ok(None);
+    };
+    let mut path = picked
+      .into_path()
+      .map_err(|_| AppError::validation("That location is not supported. Choose a folder on this computer."))?;
+    if path.extension().is_none() {
+      path.set_extension(extension);
+    }
+    std::fs::write(&path, bytes).map_err(|e| AppError::Repair(format!("Could not save the report: {e}")))?;
+    Ok(Some(path.to_string_lossy().into_owned()))
+  })
+  .await
 }

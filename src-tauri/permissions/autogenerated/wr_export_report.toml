@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-wr-export-report"
+description = "Enables the wr_export_report command without any pre-configured scope."
+commands.allow = ["wr_export_report"]
+
+[[permission]]
+identifier = "deny-wr-export-report"
+description = "Denies the wr_export_report command without any pre-configured scope."
+commands.deny = ["wr_export_report"]

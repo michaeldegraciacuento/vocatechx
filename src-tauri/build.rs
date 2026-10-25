@@ -63,6 +63,11 @@ const COMMANDS: &[&str] = &[
   "learn_set_bookmark",
   "learn_record_quiz",
   "learn_record_lab",
+  "wr_status",
+  "wr_run",
+  "wr_history",
+  "wr_report",
+  "wr_export_report",
 ];
 
 fn main() {

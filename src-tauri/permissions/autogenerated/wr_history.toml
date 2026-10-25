@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-wr-history"
+description = "Enables the wr_history command without any pre-configured scope."
+commands.allow = ["wr_history"]
+
+[[permission]]
+identifier = "deny-wr-history"
+description = "Denies the wr_history command without any pre-configured scope."
+commands.deny = ["wr_history"]

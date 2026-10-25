@@ -11,6 +11,7 @@ mod ralp;
 mod session;
 mod software;
 mod system_info;
+mod windows_repair;
 
 use std::sync::{Mutex, MutexGuard};
 
@@ -23,6 +24,7 @@ pub struct AppState {
   monitor: system_info::SystemMonitor,
   ralp: ralp::Ralp,
   software: software::SoftwareCenter,
+  repair: windows_repair::RepairGuard,
 }
 
 impl AppState {
@@ -56,13 +58,14 @@ pub fn run() {
         monitor: system_info::SystemMonitor::new(),
         ralp: ralp::Ralp::new(ralp::Locations::resolve(app.handle())?),
         software: software::SoftwareCenter::resolve(),
+        repair: windows_repair::RepairGuard::default(),
       });
       Ok(())
     })
     .on_window_event(|window, event| {
-      // Closing mid-install would abandon the batch and its history entry.
+      // Closing mid-install or mid-repair would abandon it and its history entry.
       if let tauri::WindowEvent::CloseRequested { api, .. } = event
-        && window.try_state::<AppState>().is_some_and(|state| state.software.is_installing())
+        && window.try_state::<AppState>().is_some_and(|state| state.software.is_installing() || state.repair.running())
       {
         api.prevent_close();
       }
@@ -130,6 +133,11 @@ pub fn run() {
       commands::learn_set_bookmark,
       commands::learn_record_quiz,
       commands::learn_record_lab,
+      commands::wr_status,
+      commands::wr_run,
+      commands::wr_history,
+      commands::wr_report,
+      commands::wr_export_report,
     ])
     .build(tauri::generate_context!())
     .expect("error while building tauri application")
