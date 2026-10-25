@@ -1,0 +1,80 @@
+{
+  "id": "printer-troubleshooting",
+  "version": 1,
+  "title": "Troubleshoot a printer that will not print",
+  "description": "Fix the most common printer problems: offline printers, stuck print queues, the Print Spooler, drivers and paper jams.",
+  "category": "printers-peripherals",
+  "difficulty": "beginner",
+  "durationMin": 35,
+  "objectives": [
+    "Check a printer's physical state and connection first.",
+    "Clear a stuck print queue and restart the Print Spooler.",
+    "Reinstall a printer driver from the manufacturer.",
+    "Clear a paper jam safely.",
+    "Put the steps of the laser printing process in order."
+  ],
+  "prerequisites": ["troubleshooting-process"],
+  "tools": ["Administrator account", "Printer manual or the maker's support page", "Lint-free gloves (for toner)"],
+  "safety": [
+    { "level": "warning", "text": "The fuser inside a laser printer runs at about 200 °C and stays hot after use. Let it cool before reaching inside." },
+    { "level": "caution", "text": "Do not breathe in or vacuum toner with a household vacuum: fine toner dust is a respiratory irritant and can ignite. Use a toner-rated vacuum." },
+    { "level": "caution", "text": "Turn the printer off before clearing a jam or opening it." }
+  ],
+  "steps": [
+    {
+      "title": "Check the printer itself",
+      "body": "1. Is it on, with no error light or message on its panel?\n2. Paper loaded, tray closed, toner or ink present?\n3. Connection: USB cable seated, or the printer on the same network (check its network status page)?\n4. Print a **self-test page** from the printer's own buttons. If that fails, the problem is the printer, not the computer."
+    },
+    {
+      "title": "Check it in Windows",
+      "body": "Open **Settings → Bluetooth & devices → Printers & scanners**:\n\n- Is it the **default** printer, or did the job go to another one?\n- Does it say **Offline**? Open the print queue and make sure **Use Printer Offline** is not ticked.\n- Print a **test page** from the printer's properties."
+    },
+    {
+      "title": "Clear a stuck queue",
+      "body": "If jobs sit in the queue and nothing prints:\n\n1. Open the print queue and cancel the stuck jobs.\n2. If they will not cancel, **restart the Print Spooler** service (services.msc, or VocaTechX's **Printer & Devices** module).\n3. If they are still stuck: stop the Spooler, delete the files in `C:\\Windows\\System32\\spool\\PRINTERS`, then start the Spooler again.\n\nOnly delete the files in that folder, never the folder itself."
+    },
+    {
+      "title": "Reinstall the driver",
+      "body": "A damaged or wrong driver causes garbled output or failed jobs.\n\n1. Remove the printer in Printers & scanners.\n2. Download the latest driver from the **printer maker's website** for your exact model and Windows version.\n3. Install it and add the printer again, then print a test page."
+    },
+    {
+      "title": "Clear a paper jam",
+      "body": "1. Turn the printer off and let the fuser cool.\n2. Open the doors the printer's display or manual points to.\n3. Pull the paper out **slowly, in the direction it normally travels**, with both hands so it does not tear.\n4. Check for torn pieces left behind.\n5. Close everything, turn it on and print a test page.\n\nRepeated jams point to worn rollers, the wrong paper type or damp paper."
+    },
+    {
+      "title": "Know the laser printing process",
+      "body": "Knowing the steps helps you diagnose print-quality faults:\n\n1. **Processing:** the image is prepared in memory.\n2. **Charging:** the drum is given a uniform negative charge.\n3. **Exposing:** the laser writes the image onto the drum.\n4. **Developing:** toner sticks to the exposed areas.\n5. **Transferring:** the toner moves from the drum to the paper.\n6. **Fusing:** heat and pressure melt the toner onto the paper.\n7. **Cleaning:** leftover toner and charge are removed from the drum.\n\nFor example, toner that smudges off the page points to the **fuser**."
+    }
+  ],
+  "expectedResults": [
+    "The printer prints a test page from Windows.",
+    "The queue is empty and the Print Spooler is running.",
+    "You can name the seven laser printing steps in order."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Deleting the whole spool folder.",
+      "why": "Windows needs the folder; only the stuck job files inside should be removed.",
+      "fix": "Stop the Spooler, delete only the files inside PRINTERS, then start it."
+    },
+    {
+      "mistake": "Pulling a jammed sheet backwards or with one hand.",
+      "why": "It tears, leaving pieces inside that cause the next jam.",
+      "fix": "Pull slowly in the paper's normal direction with both hands."
+    },
+    {
+      "mistake": "Installing a \"universal\" driver from a random download site.",
+      "why": "It may not support the model's features, and unofficial sites can bundle malware.",
+      "fix": "Download drivers only from the printer maker's site."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "The printer's own self-test page fails to print. Is the problem in Windows?", "answer": "No. The printer itself has the fault (paper, toner, hardware)." },
+    { "question": "Toner rubs off the printed page. Which part is likely faulty?", "answer": "The fuser, which melts toner onto the paper." },
+    { "question": "Which Windows service manages print jobs?", "answer": "The Print Spooler." }
+  ],
+  "quizId": "printer-troubleshooting-quiz",
+  "references": ["Your printer's user manual: jam clearing and maintenance pages.", "VocaTechX Printer & Devices module."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

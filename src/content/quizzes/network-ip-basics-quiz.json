@@ -1,0 +1,46 @@
+{
+  "id": "network-ip-basics-quiz",
+  "lessonId": "network-ip-basics",
+  "title": "IP addressing quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "match",
+      "prompt": "Match each setting to its job.",
+      "pairs": [
+        { "left": "IP address", "right": "The device's address on the network" },
+        { "left": "Subnet mask", "right": "Shows which part of the address is the network" },
+        { "left": "Default gateway", "right": "The router to other networks and the internet" },
+        { "left": "DNS server", "right": "Turns names into IP addresses" }
+      ],
+      "explanation": "All four are needed for normal internet access."
+    },
+    {
+      "kind": "single",
+      "prompt": "A laptop's IP address is 169.254.33.7. What is most likely wrong?",
+      "choices": ["DNS is misconfigured", "It got no reply from a DHCP server", "The subnet mask is wrong", "Nothing; it is a normal address"],
+      "correct": 1,
+      "explanation": "169.254.x.x (APIPA) is self-assigned when DHCP fails."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which are private IP addresses? Select all that apply.",
+      "choices": ["192.168.1.10", "10.0.5.20", "172.20.0.4", "8.8.8.8"],
+      "correct": [0, 1, 2],
+      "explanation": "8.8.8.8 is a public address (Google's DNS)."
+    },
+    {
+      "kind": "order",
+      "prompt": "Put these tests in order, from the computer outward.",
+      "items": ["ping 127.0.0.1", "ping the default gateway", "ping 8.8.8.8", "ping example.com"],
+      "explanation": "Testing outward shows exactly where the connection breaks."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which command shows the MAC address and DNS servers?",
+      "choices": ["ipconfig", "ipconfig /all", "ping", "tracert"],
+      "correct": 1,
+      "explanation": "ipconfig /all shows the full configuration."
+    }
+  ]
+}

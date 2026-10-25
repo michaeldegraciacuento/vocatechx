@@ -1,0 +1,53 @@
+{
+  "id": "no-power-no-display-quiz",
+  "lessonId": "no-power-no-display",
+  "title": "No power / no display quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "Nothing happens when the power button is pressed: no fans, no lights. What do you check first?",
+      "choices": ["The RAM", "The wall outlet, power cord and PSU switch", "The graphics card drivers", "The Windows installation"],
+      "correct": 1,
+      "explanation": "With no power at all, start where the power comes from and work inward."
+    },
+    {
+      "kind": "single",
+      "prompt": "The DRAM debug LED stays lit during startup. What is the most likely cause?",
+      "choices": ["A memory problem, such as a badly seated module", "A faulty monitor", "A full hard drive", "A missing Windows update"],
+      "correct": 0,
+      "explanation": "The lit LED shows the stage where startup stopped: here, memory."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Fans spin but the monitor shows \"No signal\". Which checks make sense? Select all that apply.",
+      "choices": [
+        "Check the monitor's input setting",
+        "Plug the cable into the graphics card, not the motherboard",
+        "Reseat the RAM",
+        "Replace the wall outlet"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "The computer has power, so focus on display, cables, memory and graphics."
+    },
+    {
+      "kind": "single",
+      "prompt": "Why test with a minimal configuration?",
+      "choices": [
+        "It makes the computer faster",
+        "It removes parts that might cause the fault, so you can add them back one by one",
+        "It is required by Windows",
+        "It resets the BIOS password"
+      ],
+      "correct": 1,
+      "explanation": "Starting with the essentials and adding parts back reveals which part causes the problem."
+    },
+    {
+      "kind": "single",
+      "prompt": "A PSU tester shows no output from the power supply. What should you do?",
+      "choices": ["Open the PSU and check the fuse", "Replace the power supply", "Update the BIOS", "Reseat the CPU"],
+      "correct": 1,
+      "explanation": "A faulty PSU is replaced as a whole unit. Never open it."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "multimeter-psu-basics-quiz",
+  "lessonId": "multimeter-psu-basics",
+  "title": "Multimeter and PSU quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "match",
+      "prompt": "Match each ATX wire colour to its voltage.",
+      "pairs": [
+        { "left": "Yellow", "right": "+12 V" },
+        { "left": "Red", "right": "+5 V" },
+        { "left": "Orange", "right": "+3.3 V" },
+        { "left": "Black", "right": "Ground" },
+        { "left": "Purple", "right": "+5 V standby" }
+      ],
+      "explanation": "Knowing the colours helps you read a PSU and its cables."
+    },
+    {
+      "kind": "single",
+      "prompt": "A PSU tester shows +12 V at 11.1 V. What is your conclusion?",
+      "choices": ["It is fine", "It is below the 11.40 V minimum: replace the PSU", "Add another fan", "Update the BIOS"],
+      "correct": 1,
+      "explanation": "The +12 V output must stay within 11.40–12.60 V."
+    },
+    {
+      "kind": "single",
+      "prompt": "A CMOS battery measures 2.4 V. The computer forgets its date and time. What should you do?",
+      "choices": ["Replace the CR2032 battery", "Replace the motherboard", "Reinstall Windows", "Nothing"],
+      "correct": 0,
+      "explanation": "A new CR2032 reads about 3 V; 2.4 V is too weak to keep the settings."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which multimeter setting finds a broken wire in an unplugged cable?",
+      "choices": ["AC voltage", "Continuity", "Current (A)", "Temperature"],
+      "correct": 1,
+      "explanation": "The meter beeps when there is an unbroken connection."
+    },
+    {
+      "kind": "single",
+      "prompt": "How should a trainee test whether a power supply works?",
+      "choices": ["Short the green and black wires with a paperclip", "Use a PSU tester", "Open the PSU and measure inside", "Measure the wall socket"],
+      "correct": 1,
+      "explanation": "A PSU tester is safe and shows every output voltage."
+    }
+  ]
+}

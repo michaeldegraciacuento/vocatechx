@@ -23,6 +23,22 @@ export function partStatus(id: PartId, s: SimState): string | null {
       return [!s.gpu.power && "power off", !s.gpu.screws && "no screws", !s.pcieLatch && "latch open"].filter(Boolean).join(" · ") || "Installed";
     case "m2":
       return s.m2.installed ? (s.m2.screw ? "Installed" : "Not secured") : "On the mat";
+    case "sata-ssd":
+      if (!s.sata.installed) return "On the mat";
+      return [!s.sata.data && "no data cable", !s.sata.power && "no power", !s.sata.screws && "no screws"].filter(Boolean).join(" · ") || "Installed";
+    case "psu":
+      if (!s.psu.installed) return "On the mat";
+      return s.psu.screws ? "Installed" : "Screws out";
+    case "atx-24pin":
+      return s.psu.installed ? (s.atx24 ? "Connected" : "Unplugged") : "With the PSU";
+    case "eps-8pin":
+      return s.psu.installed ? (s.eps8 ? "Connected" : "Unplugged") : "With the PSU";
+    case "sata-data":
+      return s.sata.installed && s.sata.data ? "Connected" : "Unplugged";
+    case "sata-power":
+      return s.psu.installed ? (s.sata.installed && s.sata.power ? "Connected" : "Unplugged") : "With the PSU";
+    case "pcie-power":
+      return s.psu.installed ? (s.gpu.installed && s.gpu.power ? "Connected" : "Unplugged") : "With the PSU";
     default:
       return isRemoved(id, s) ? "Removed" : null;
   }

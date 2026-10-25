@@ -17,6 +17,14 @@ describe("bundled content", () => {
     }
   });
 
+  it("has at least one lesson, with a quiz, in every category", () => {
+    for (const id of CATEGORY_IDS) {
+      const inCategory = catalog.lessons.filter((l) => l.category === id);
+      expect(inCategory.length, id).toBeGreaterThan(0);
+      expect(inCategory.every((l) => l.quizId), id).toBe(true);
+    }
+  });
+
   it("lists every category exactly once", () => {
     expect(CATEGORIES.map((c) => c.id).sort()).toEqual([...CATEGORY_IDS].sort());
   });

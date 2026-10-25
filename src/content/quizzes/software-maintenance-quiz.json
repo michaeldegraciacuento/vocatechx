@@ -1,0 +1,46 @@
+{
+  "id": "software-maintenance-quiz",
+  "lessonId": "software-maintenance",
+  "title": "Software maintenance quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "What does Windows do to keep an SSD fast?",
+      "choices": ["Defragments it weekly", "Sends TRIM commands", "Formats it monthly", "Nothing"],
+      "correct": 1,
+      "explanation": "TRIM tells the SSD which blocks are no longer in use."
+    },
+    {
+      "kind": "match",
+      "prompt": "Match the backup rule numbers to their meaning.",
+      "pairs": [
+        { "left": "3", "right": "Copies of the data" },
+        { "left": "2", "right": "Different types of storage" },
+        { "left": "1", "right": "Copy kept off-site" }
+      ],
+      "explanation": "3-2-1 protects against drive failure, theft, fire and ransomware."
+    },
+    {
+      "kind": "single",
+      "prompt": "A customer has two antivirus programs running in real time. What should you advise?",
+      "choices": ["Add a third for safety", "Keep only one", "Turn both off", "It makes no difference"],
+      "correct": 1,
+      "explanation": "Two real-time scanners conflict and slow the computer."
+    },
+    {
+      "kind": "single",
+      "prompt": "A disk health tool shows a growing number of reallocated sectors on an HDD. What does it mean?",
+      "choices": ["The drive is healthy", "The drive is starting to fail: back up and plan a replacement", "The drive needs defragmenting", "Windows needs an update"],
+      "correct": 1,
+      "explanation": "Reallocated sectors are a classic early warning of HDD failure."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which tasks belong in regular software maintenance? Select all that apply.",
+      "choices": ["Installing Windows updates", "Freeing up storage", "Running malware scans", "Opening the PSU to clean it"],
+      "correct": [0, 1, 2],
+      "explanation": "The PSU is never opened."
+    }
+  ]
+}

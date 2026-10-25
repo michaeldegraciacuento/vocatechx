@@ -67,10 +67,19 @@ const COMMANDS: &[&str] = &[
 
 fn main() {
   println!("cargo:rerun-if-changed=windows-app-manifest.xml");
+  // Release builds always run as administrator (one UAC prompt at launch).
+  // Dev builds keep Tauri's default manifest so `npm run tauri dev` starts
+  // from a normal terminal; Windows refuses to launch an admin-only exe from
+  // a non-elevated one (os error 740).
+  let windows = if std::env::var("PROFILE").as_deref() == Ok("release") {
+    tauri_build::WindowsAttributes::new().app_manifest(include_str!("windows-app-manifest.xml"))
+  } else {
+    tauri_build::WindowsAttributes::new()
+  };
   tauri_build::try_build(
     tauri_build::Attributes::new()
       .app_manifest(tauri_build::AppManifest::new().commands(COMMANDS))
-      .windows_attributes(tauri_build::WindowsAttributes::new().app_manifest(include_str!("windows-app-manifest.xml"))),
+      .windows_attributes(windows),
   )
   .expect("failed to run tauri-build");
 }

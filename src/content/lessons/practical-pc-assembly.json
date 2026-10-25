@@ -1,0 +1,90 @@
+{
+  "id": "practical-pc-assembly",
+  "version": 1,
+  "title": "Practical activity: assemble a desktop PC",
+  "description": "A hands-on assessment: build a working computer from parts in the correct order, with an instructor checklist.",
+  "category": "practical-assessment",
+  "difficulty": "advanced",
+  "durationMin": 90,
+  "objectives": [
+    "Assemble a desktop PC from parts in a safe, logical order.",
+    "Connect every power, data and front-panel cable correctly.",
+    "Pass the first power-on test (POST) and check the parts in the UEFI.",
+    "Work cleanly and safely throughout, as assessed by the checklist."
+  ],
+  "prerequisites": ["esd-safety-basics", "pc-major-components", "ram-remove-install", "technician-toolkit"],
+  "tools": [
+    "Case, motherboard, CPU, cooler, RAM, storage, PSU (and graphics card if used)",
+    "Phillips #2 screwdriver and parts tray",
+    "Anti-static wrist strap and mat",
+    "Thermal paste (if the cooler has none pre-applied)",
+    "Cable ties",
+    "Motherboard, case and cooler manuals"
+  ],
+  "safety": [
+    { "level": "warning", "text": "Keep the PSU unplugged until the final power-on test. Wear a grounded wrist strap throughout." },
+    { "level": "warning", "text": "LGA socket pins are extremely fragile. Do not touch them, and keep the socket cover on until the CPU goes in." },
+    { "level": "caution", "text": "Practise each step in the 3D Hardware Lab first if you are unsure." }
+  ],
+  "steps": [
+    {
+      "title": "Prepare the workspace",
+      "body": "Clear a large, non-carpeted table and lay out the anti-static mat. Put on the wrist strap. Unbox parts only as you need them and keep them in their anti-static bags. Have the manuals open."
+    },
+    {
+      "title": "Build the motherboard outside the case",
+      "body": "On the motherboard box or the mat:\n\n1. **CPU:** open the socket, line up the triangle and notches, lower it in without pressure, close the socket.\n2. **M.2 SSD:** insert at an angle and secure with its screw or latch.\n3. **RAM:** in the manual's dual-channel slots (often A2 and B2), pressed in until the clips click.\n4. **Cooler:** apply paste if needed, mount it, tighten screws in a cross pattern, connect the fan to **CPU_FAN**."
+    },
+    {
+      "title": "Prepare the case",
+      "body": "1. Check the **standoffs** match the motherboard's holes. A standoff where there is no hole can short the board.\n2. Fit the **I/O shield** from the inside, if the board has a separate one.\n3. Install the **PSU**, fan facing a vent, and fix it with its 4 screws."
+    },
+    {
+      "title": "Install the motherboard and drives",
+      "body": "1. Lower the board in at an angle so the ports go through the I/O shield, then line it up on the standoffs.\n2. Screw it in firmly, not too tight.\n3. Mount any 2.5- or 3.5-inch drives in their bays."
+    },
+    {
+      "title": "Install the graphics card",
+      "body": "Remove the slot covers it needs, press the card into the top **PCIe x16** slot until the latch clicks, and screw its bracket to the case."
+    },
+    {
+      "title": "Connect the cables",
+      "body": "- **24-pin ATX** to the motherboard\n- **8-pin CPU (EPS)** at the top-left of the board\n- **PCIe power** to the graphics card\n- **SATA power and data** to any SATA drives\n- **Front panel:** power switch, reset, power LED and HDD LED to the header (polarity matters for the LEDs), plus front **USB** and **audio**\n- **Case fans** to the fan headers\n\nCheck the manual's header diagram. Tidy the cables with ties for airflow."
+    },
+    {
+      "title": "First power-on test",
+      "body": "1. Check nothing is loose inside: no screws, no tools.\n2. Connect the monitor to the graphics card (or the board if there is no card), keyboard and power cord.\n3. Switch on. The first start can take longer while memory trains.\n4. Enter the **UEFI setup** (often **Del** or **F2**) and check: CPU and full RAM are detected, the drives are listed, temperatures are normal, and memory runs at its rated speed (enable XMP/EXPO if appropriate).\n5. Then install the operating system."
+    }
+  ],
+  "expectedResults": [
+    "The computer passes POST and shows the UEFI setup.",
+    "The UEFI shows the correct CPU, full RAM, all drives and normal temperatures.",
+    "Cables are tidy and nothing is loose inside the case."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Forgetting the 8-pin CPU power cable.",
+      "why": "The board may power its fans but will not start the CPU, so there is no display.",
+      "fix": "Always connect both the 24-pin and the 8-pin CPU cables."
+    },
+    {
+      "mistake": "Extra standoffs where the board has no hole.",
+      "why": "A metal standoff touching the back of the board can short circuits.",
+      "fix": "Match the standoffs to the board's holes before installing it."
+    },
+    {
+      "mistake": "Front-panel LED wires reversed.",
+      "why": "LEDs only work one way round; the power button still works but the light does not.",
+      "fix": "Match + and − to the header diagram in the manual."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Why install the CPU, RAM and cooler before the board goes in the case?", "answer": "There is more room and less risk of damaging the board or socket." },
+    { "question": "What must you check before fitting the motherboard?", "answer": "That the standoffs match the board's mounting holes." },
+    { "question": "Name the two power cables every motherboard needs.", "answer": "The 24-pin ATX cable and the 8-pin CPU (EPS) cable." }
+  ],
+  "quizId": "practical-pc-assembly-quiz",
+  "references": ["Your motherboard, case and cooler manuals.", "TESDA Computer Systems Servicing NC II: assemble computer hardware."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor. Instructors may add their own scoring rubric."
+}

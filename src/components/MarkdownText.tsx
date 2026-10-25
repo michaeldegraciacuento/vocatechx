@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 /**
- * Renders the small Markdown subset Ralp uses (paragraphs, headings, lists,
- * code blocks, **bold**, `code`) as React elements. Never uses innerHTML, so
+ * Renders the small Markdown subset Ralp and the lessons use (paragraphs,
+ * headings, lists, code blocks, simple tables, **bold**, `code`) as React elements. Never uses innerHTML, so
  * model output cannot inject markup.
  */
 export function MarkdownText({ text }: { text: string }) {
@@ -65,6 +65,44 @@ function renderBlocks(text: string): ReactNode[] {
         <pre key={blocks.length} className="m-0 overflow-x-auto rounded-[9px] bg-[#101827] px-3.5 py-3 font-mono text-[12px] leading-[1.6] text-[#dbe7ff]">
           <code>{code.join("\n")}</code>
         </pre>,
+      );
+      continue;
+    }
+
+    // A table: consecutive lines starting with "|"; the "|---|" row is skipped.
+    if (trimmed.startsWith("|")) {
+      flushParagraph();
+      flushList();
+      const rows: string[][] = [];
+      for (; i < lines.length && lines[i].trim().startsWith("|"); i++) {
+        const cells = lines[i].trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        if (!cells.every((c) => /^:?-{2,}:?$/.test(c))) rows.push(cells);
+      }
+      i--;
+      const [head, ...body] = rows;
+      blocks.push(
+        <div key={blocks.length} className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-[12px]">
+            {head && (
+              <thead>
+                <tr>
+                  {head.map((c, j) => (
+                    <th key={j} className="border-b border-[#dce2eb] px-2.5 py-1.5 font-semibold text-[#172033]">{renderInline(c)}</th>
+                  ))}
+                </tr>
+              </thead>
+            )}
+            <tbody>
+              {body.map((row, r) => (
+                <tr key={r}>
+                  {row.map((c, j) => (
+                    <td key={j} className="border-b border-[#eef1f5] px-2.5 py-1.5">{renderInline(c)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>,
       );
       continue;
     }

@@ -1,9 +1,10 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Clock, ListChecks, Wrench } from "lucide-react";
+import { ArrowLeft, ArrowRight, Box, CheckCircle2, ChevronDown, Clock, ListChecks, MonitorPlay, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MarkdownText } from "../../components/MarkdownText";
 import { catalog } from "../../content";
 import { categoryTitle } from "../../content/categories";
 import { lessonStatus, missingPrerequisites } from "../../content/library";
+import { LAB_LESSONS } from "../lab/sim/lessons";
 import type { Lesson } from "../../content/schema";
 import { ErrorNote, Panel, buttonClass, secondaryButtonClass } from "../network/ui";
 import { BookmarkButton, DifficultyBadge, DraftBadge, LessonImage, SafetyCallout, StatusBadge } from "./ui";
@@ -46,18 +47,22 @@ export function LessonView({
   onBack,
   onOpenLesson,
   onTakeQuiz,
+  onWatchDemo,
 }: {
   lesson: Lesson;
   data: LearningData;
   onBack: () => void;
   onOpenLesson: (id: string) => void;
   onTakeQuiz: (quizId: string) => void;
+  /** Opens the 3D Hardware Lab playing this lab lesson's demonstration. */
+  onWatchDemo?: (labLessonId: string) => void;
 }) {
   const record = data.progress.get(lesson.id);
   const lastPage = lesson.steps.length + 1;
   const [page, setPage] = useState(() => Math.min(record?.lastStep ?? 0, lastPage));
   const status = lessonStatus(record);
   const missing = missingPrerequisites(lesson, data.progress);
+  const demos = LAB_LESSONS.filter((l) => l.libraryLessons.includes(lesson.id));
   const top = useRef<HTMLDivElement>(null);
   const { saveProgress } = data;
 
@@ -127,6 +132,21 @@ export function LessonView({
           {page === 0 && (
             <>
               <p className="m-0 text-[13px] leading-[1.7] text-[#344054]">{lesson.description}</p>
+              {demos.length > 0 && onWatchDemo && (
+                <div className="grid gap-2 rounded-[12px] border border-[#c7d7fe] bg-[#eef4ff] px-3.5 py-3">
+                  <p className="m-0 flex items-center gap-2 text-xs font-semibold text-[#1e3a8a]">
+                    <Box size={14} /> Watch it in 3D
+                  </p>
+                  <p className="m-0 text-[11px] leading-[1.5] text-[#1e40af]">See these steps demonstrated on a simulated PC, then try them yourself.</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {demos.map((d) => (
+                      <button key={d.id} type="button" className={`${secondaryButtonClass} bg-white`} onClick={() => onWatchDemo(d.id)}>
+                        <MonitorPlay size={14} /> {d.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {missing.length > 0 && (
                 <div className="rounded-[12px] border border-[#dbe5f5] bg-[#f5f8ff] px-3.5 py-3 text-xs leading-[1.6] text-[#1e3a8a]">
                   <p className="m-0 font-semibold">Recommended first:</p>

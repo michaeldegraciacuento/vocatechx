@@ -1,6 +1,6 @@
-import { apply, ASSEMBLED, type Action, type ErrorKind, type SimState } from "./engine";
-import { matches, type LabLesson } from "./lessons";
-import { PARTS } from "./parts";
+import { actionsFor, apply, ASSEMBLED, type Action, type ErrorKind, type SimState } from "./engine";
+import { matches, type LabLesson, type LabStep } from "./lessons";
+import { PARTS, type PartId } from "./parts";
 
 // Runs a guided lesson (or free exploration) on top of the engine: decides
 // whether each action is the expected step, a known mistake, unsafe, or just
@@ -52,7 +52,7 @@ export function attempt(run: Run, action: Action): { run: Run; feedback: Feedbac
     const r = apply(run.sim, action);
     if (!r.ok) return mistake(r.message, r.kind);
     const name = action.type === "identify" ? PARTS[action.part].name : null;
-    const message = [name ? `Correct: that is the ${name}.` : r.message, step.explain].filter(Boolean).join(" ");
+    const message = [name ? `Correct: you found the ${name}.` : r.message, step.explain].filter(Boolean).join(" ");
     return { run: { ...run, sim: r.state, step: run.step + 1 }, feedback: { tone: "success", message } };
   }
 
@@ -62,7 +62,7 @@ export function attempt(run: Run, action: Action): { run: Run; feedback: Feedbac
   if (action.type === "identify") {
     // Selecting parts is how you look around; it only counts during "find it" steps.
     if (step.expect.type !== "identify") return { run, feedback: null };
-    return mistake(`That is the ${PARTS[action.part].name}. ${step.hint}`);
+    return mistake(`Not quite: you selected the ${PARTS[action.part].name}. ${step.hint}`);
   }
 
   const r = apply(run.sim, action);
@@ -72,4 +72,19 @@ export function attempt(run: Run, action: Action): { run: Run; feedback: Feedbac
 
 export function withHint(run: Run): Run {
   return { ...run, hints: run.hints + 1 };
+}
+
+/** The concrete action a step asks for (the first part, when several are accepted). */
+export function expectedAction(step: LabStep): Action {
+  const m = step.expect;
+  const part = Array.isArray(m.part) ? m.part[0] : m.part;
+  return { type: m.type, ...(part ? { part } : {}), ...(m.slot ? { slot: m.slot } : {}) } as Action;
+}
+
+/** The part a demonstration selects to perform a step: the one that offers its action. */
+export function demoPart(step: LabStep, sim: SimState): PartId | null {
+  if (step.expect.type === "identify") {
+    return (Array.isArray(step.expect.part) ? step.expect.part[0] : step.expect.part) ?? null;
+  }
+  return step.highlight.find((p) => actionsFor(p, sim).some((a) => matches(step.expect, a))) ?? step.highlight[0] ?? null;
 }

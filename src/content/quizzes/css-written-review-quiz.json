@@ -1,0 +1,77 @@
+{
+  "id": "css-written-review-quiz",
+  "lessonId": "css-written-review",
+  "title": "CSS written review quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "What must you do before opening a computer?",
+      "choices": ["Switch off the monitor", "Unplug it, drain the remaining power and wear a grounded wrist strap", "Remove the CMOS battery", "Close all programs"],
+      "correct": 1,
+      "explanation": "Remove mains power, drain standby power and ground yourself."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which memory loses its contents when the power is off?",
+      "choices": ["SSD", "HDD", "RAM", "M.2 drive"],
+      "correct": 2,
+      "explanation": "RAM is volatile; the others are storage."
+    },
+    {
+      "kind": "single",
+      "prompt": "A PC shows the IP address 169.254.8.20. What is the problem?",
+      "choices": ["DNS failure", "No address from DHCP", "Wrong subnet mask", "No problem"],
+      "correct": 1,
+      "explanation": "169.254.x.x is an APIPA address, used when DHCP fails."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which is the third wire in T568B?",
+      "choices": ["Orange", "Blue", "White-green", "White-blue"],
+      "correct": 2,
+      "explanation": "White-orange, orange, white-green, blue, white-blue, green, white-brown, brown."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which repair should you try before Reset this PC?",
+      "choices": ["Startup Repair and System Restore", "Formatting the drive", "Replacing the motherboard", "Installing a second antivirus"],
+      "correct": 0,
+      "explanation": "Use the least destructive repairs first."
+    },
+    {
+      "kind": "single",
+      "prompt": "Printed pages smudge when touched. Which part is faulty?",
+      "choices": ["Fuser", "Drum", "Laser", "Paper tray"],
+      "correct": 0,
+      "explanation": "The fuser melts toner onto the paper."
+    },
+    {
+      "kind": "single",
+      "prompt": "A PSU tester shows +12 V at 12.9 V. Is it acceptable?",
+      "choices": ["Yes", "No, it is above the 12.60 V maximum", "Only for SSDs", "Only if the fan spins"],
+      "correct": 1,
+      "explanation": "ATX allows ±5%: 11.40–12.60 V."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which should you NOT do to an SSD?",
+      "choices": ["Back it up", "Defragment it", "Check its health", "Keep free space"],
+      "correct": 1,
+      "explanation": "Defragmenting adds wear without benefit; Windows uses TRIM."
+    },
+    {
+      "kind": "order",
+      "prompt": "Put the troubleshooting steps in order.",
+      "items": ["Identify the problem", "Establish a theory", "Test the theory", "Plan and fix", "Verify functionality", "Document"],
+      "explanation": "Always end by verifying and documenting."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which does Windows 11 require? Select all that apply.",
+      "choices": ["TPM 2.0", "UEFI with Secure Boot capability", "4 GB RAM", "An optical drive"],
+      "correct": [0, 1, 2],
+      "explanation": "No optical drive is needed; it installs from USB."
+    }
+  ]
+}

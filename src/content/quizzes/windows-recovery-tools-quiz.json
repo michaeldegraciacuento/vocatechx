@@ -1,0 +1,53 @@
+{
+  "id": "windows-recovery-tools-quiz",
+  "lessonId": "windows-recovery-tools",
+  "title": "Windows recovery tools quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "match",
+      "prompt": "Match each tool to what it does.",
+      "pairs": [
+        { "left": "Startup Repair", "right": "Fixes problems that stop Windows from loading" },
+        { "left": "System Restore", "right": "Returns system files and settings to an earlier point" },
+        { "left": "sfc /scannow", "right": "Checks and replaces damaged protected system files" },
+        { "left": "mdsched.exe", "right": "Tests the RAM at restart" },
+        { "left": "Reset this PC", "right": "Reinstalls Windows" }
+      ],
+      "explanation": "Choose the tool that matches the symptom, least destructive first."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which keyboard action opens the recovery environment from the Start menu?",
+      "choices": ["Hold Ctrl while clicking Shut down", "Hold Shift while clicking Restart", "Press F5 in Windows", "Hold Alt while clicking Sleep"],
+      "correct": 1,
+      "explanation": "Shift + Restart opens Windows Recovery Environment."
+    },
+    {
+      "kind": "single",
+      "prompt": "SFC reports it cannot repair some files. What should you run?",
+      "choices": ["DISM /Online /Cleanup-Image /RestoreHealth, then SFC again", "format C:", "ipconfig /flushdns", "chkdsk /r on a USB drive"],
+      "correct": 0,
+      "explanation": "DISM repairs the component store SFC uses to replace damaged files."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which Safe Mode option lets you download a driver?",
+      "choices": ["Safe Mode (4)", "Safe Mode with Networking (5)", "Safe Mode with Command Prompt (6)", "None of them"],
+      "correct": 1,
+      "explanation": "Only Safe Mode with Networking loads network drivers."
+    },
+    {
+      "kind": "single",
+      "prompt": "\"Reset this PC → Keep my files\" will…",
+      "choices": [
+        "Keep files, programs and settings",
+        "Keep personal files but remove installed programs and settings",
+        "Erase everything",
+        "Only update drivers"
+      ],
+      "correct": 1,
+      "explanation": "Programs must be reinstalled afterwards. Back up first anyway."
+    }
+  ]
+}

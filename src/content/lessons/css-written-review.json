@@ -1,0 +1,59 @@
+{
+  "id": "css-written-review",
+  "version": 1,
+  "title": "Written review: Computer Systems Servicing",
+  "description": "A summary of the key points from every category, followed by a mixed review quiz to check you are ready for an assessment.",
+  "category": "practical-assessment",
+  "difficulty": "intermediate",
+  "durationMin": 30,
+  "objectives": [
+    "Recall the key facts from each area of the library.",
+    "Check your readiness with a mixed quiz.",
+    "Find the lessons to revisit for any weak area."
+  ],
+  "prerequisites": ["esd-safety-basics", "pc-major-components", "troubleshooting-process"],
+  "tools": [],
+  "safety": [{ "level": "caution", "text": "Safety questions appear in every CSS assessment. Review \"Electrical safety and ESD precautions\" first." }],
+  "steps": [
+    {
+      "title": "Safety and hardware",
+      "body": "- Unplug, drain power, wear a grounded wrist strap; never open a PSU.\n- RAM is volatile working memory; storage keeps data.\n- The PSU turns 220 V AC into +12 V, +5 V and +3.3 V DC.\n- Every motherboard needs the 24-pin ATX and 8-pin CPU cables."
+    },
+    {
+      "title": "Assembly and troubleshooting",
+      "body": "- Never force a part: check the notch, key or latch.\n- The six troubleshooting steps: identify, theory, test, plan and fix, verify, document.\n- Change one thing at a time. Test the simplest causes first.\n- No display: check input, cable, card vs board, RAM, minimal configuration."
+    },
+    {
+      "title": "Windows",
+      "body": "- Windows 11 needs TPM 2.0, UEFI with Secure Boot, 4 GB RAM and 64 GB storage.\n- Repairs from least destructive: Startup Repair, System Restore, Safe Mode, DISM then SFC, and Reset this PC last.\n- Only genuine licences; never activators."
+    },
+    {
+      "title": "Networking",
+      "body": "- IP address, subnet mask, default gateway, DNS.\n- 169.254.x.x means DHCP failed.\n- T568B: white-orange, orange, white-green, blue, white-blue, green, white-brown, brown.\n- Ping outward: 127.0.0.1, gateway, 8.8.8.8, a name."
+    },
+    {
+      "title": "Printers, maintenance and tools",
+      "body": "- Stuck queue: restart the Print Spooler. Laser steps: processing, charging, exposing, developing, transferring, fusing, cleaning.\n- Hold fans still under compressed air; no household vacuums inside.\n- Don't defragment SSDs. Back up with 3-2-1.\n- ATX tolerance ±5% (+12 V: 11.40–12.60 V). Yellow +12 V, red +5 V, orange +3.3 V."
+    },
+    {
+      "title": "Take the review quiz",
+      "body": "Answer the quiz without looking back. For each question you miss, open that topic's lesson in the library and review it, then try again."
+    }
+  ],
+  "expectedResults": ["You score 80% or more on the review quiz.", "You know which lessons to revisit for any question you missed."],
+  "commonMistakes": [
+    {
+      "mistake": "Memorising answers without understanding them.",
+      "why": "Practical assessments ask you to apply the knowledge to a real fault.",
+      "fix": "For each fact, ask yourself what would happen on a real computer if you got it wrong."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Which is the last resort when repairing Windows?", "answer": "Reset this PC (or a clean reinstall)." },
+    { "question": "What is the first step of troubleshooting?", "answer": "Identify the problem." }
+  ],
+  "quizId": "css-written-review-quiz",
+  "references": ["TESDA Computer Systems Servicing NC II training regulations."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

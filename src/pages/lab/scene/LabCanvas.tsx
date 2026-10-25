@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { GridHelper, MathUtils, Vector3 } from "three";
+import { GridHelper, MathUtils, MOUSE, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { SimState } from "../sim/engine";
 import type { CameraView } from "../sim/lessons";
@@ -9,12 +9,15 @@ import { CAMERA_VIEWS } from "./layout";
 import type { Highlight } from "./motion";
 import { PcModel } from "./PcModel";
 
+/** Select: left-drag rotates (clicks select parts). Hand: left-drag pans. */
+export type LabTool = "select" | "hand";
+
 /**
  * Orbit/pan/zoom controls plus smooth moves to preset views. `request`
  * changes every time a view is asked for, so asking for the same view again
  * (Reset view) still moves the camera back. Dragging cancels a move.
  */
-function CameraRig({ view, request }: { view: CameraView; request: number }) {
+function CameraRig({ view, request, tool }: { view: CameraView; request: number; tool: LabTool }) {
   const { camera, gl, invalidate } = useThree();
   const controls = useRef<OrbitControls | null>(null);
   const goal = useRef<{ position: Vector3; target: Vector3 } | null>(null);
@@ -45,6 +48,17 @@ function CameraRig({ view, request }: { view: CameraView; request: number }) {
       controls.current = null;
     };
   }, [camera, gl, invalidate]);
+
+  // The left button does the tool's job; the right button does the other one.
+  useEffect(() => {
+    const c = controls.current;
+    if (!c) return;
+    c.mouseButtons = {
+      LEFT: tool === "hand" ? MOUSE.PAN : MOUSE.ROTATE,
+      MIDDLE: MOUSE.DOLLY,
+      RIGHT: tool === "hand" ? MOUSE.ROTATE : MOUSE.PAN,
+    };
+  }, [tool]);
 
   useEffect(() => {
     if (firstView.current === view) {
@@ -88,6 +102,7 @@ export type LabCanvasProps = {
   viewRequest: number;
   exploded: boolean;
   hidePanels: boolean;
+  tool: LabTool;
   hl: (id: PartId) => Highlight;
   onSelect: (id: PartId) => void;
   onHover: (id: PartId | null) => void;
@@ -95,7 +110,7 @@ export type LabCanvasProps = {
   onLost: () => void;
 };
 
-export function LabCanvas({ state, view, viewRequest, exploded, hidePanels, hl, onSelect, onHover, onMiss, onLost }: LabCanvasProps) {
+export function LabCanvas({ state, view, viewRequest, exploded, hidePanels, tool, hl, onSelect, onHover, onMiss, onLost }: LabCanvasProps) {
   return (
     <Canvas
       frameloop="demand"
@@ -114,8 +129,8 @@ export function LabCanvas({ state, view, viewRequest, exploded, hidePanels, hl, 
       <directionalLight position={[-70, 10, 40]} intensity={0.55} color="#bcd4ff" />
       <pointLight position={[0, 6, 14]} intensity={60} distance={45} color="#9cc7ff" />
       <Floor />
-      <PcModel state={state} exploded={exploded} hidePanels={hidePanels} hl={hl} onSelect={onSelect} onHover={onHover} />
-      <CameraRig view={view} request={viewRequest} />
+      <PcModel state={state} exploded={exploded} hidePanels={hidePanels} interactive={tool === "select"} hl={hl} onSelect={onSelect} onHover={onHover} />
+      <CameraRig view={view} request={viewRequest} tool={tool} />
     </Canvas>
   );
 }

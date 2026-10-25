@@ -1,0 +1,77 @@
+{
+  "id": "network-ip-basics",
+  "version": 1,
+  "title": "IP addressing and basic network commands",
+  "description": "Understand IP addresses, subnet masks, gateways, DNS and DHCP, and use ipconfig and ping to find where a connection breaks.",
+  "category": "networking",
+  "difficulty": "beginner",
+  "durationMin": 35,
+  "objectives": [
+    "Explain IP address, subnet mask, default gateway and DNS server.",
+    "Tell DHCP (automatic) from static addressing.",
+    "Recognise private and APIPA (169.254.x.x) addresses.",
+    "Use ipconfig, ping, tracert and nslookup to troubleshoot."
+  ],
+  "prerequisites": [],
+  "tools": ["Windows computer on a network", "Command Prompt or Terminal"],
+  "safety": [
+    { "level": "caution", "text": "Only change IP settings on networks you are authorised to work on. A wrong static address can disconnect other devices." }
+  ],
+  "steps": [
+    {
+      "title": "The four settings every device needs",
+      "body": "- **IP address:** the device's address on the network, e.g. `192.168.1.25`.\n- **Subnet mask:** which part of the address is the network, e.g. `255.255.255.0` (also written `/24`).\n- **Default gateway:** the router that leads to other networks and the internet, e.g. `192.168.1.1`.\n- **DNS server:** turns names like `example.com` into IP addresses."
+    },
+    {
+      "title": "DHCP or static",
+      "body": "- **DHCP:** the router hands out the settings automatically. Most computers and phones use this.\n- **Static:** the settings are typed in by hand. Used for printers, servers and other devices whose address must not change.\n\nTwo devices with the **same IP address** on one network cause a conflict, and both may lose connection."
+    },
+    {
+      "title": "Recognise the address ranges",
+      "body": "**Private** addresses are used inside homes and offices, and are not reachable directly from the internet:\n\n- `10.0.0.0` – `10.255.255.255`\n- `172.16.0.0` – `172.31.255.255`\n- `192.168.0.0` – `192.168.255.255`\n\n**APIPA** addresses (`169.254.x.x`) mean the computer asked for an address by DHCP and **got no answer**. Check the cable, Wi-Fi connection or router."
+    },
+    {
+      "title": "See the settings with ipconfig",
+      "body": "In Command Prompt:\n\n```\nipconfig\nipconfig /all\n```\n\n`ipconfig /all` also shows the MAC (physical) address, DHCP server and DNS servers.\n\nUseful fixes:\n\n```\nipconfig /release\nipconfig /renew\nipconfig /flushdns\n```\n\n`/release` and `/renew` request a new DHCP address; `/flushdns` clears cached name lookups."
+    },
+    {
+      "title": "Find where the connection breaks",
+      "body": "Test outward, one step at a time:\n\n1. `ping 127.0.0.1`: the computer's own network software.\n2. `ping` your **default gateway**: the local network and router.\n3. `ping 8.8.8.8`: the internet, by IP address.\n4. `ping example.com`: name resolution (DNS).\n\nIf step 3 works but step 4 fails, the problem is DNS. `tracert` shows each router on the way; `nslookup` tests DNS directly."
+    },
+    {
+      "title": "Use VocaTechX's Network Center",
+      "body": "VocaTechX's **Network Center** runs these checks for you and explains the result: adapter status, IP configuration, gateway, DNS and internet reachability. Use it to confirm what the commands showed."
+    }
+  ],
+  "expectedResults": [
+    "You can read an ipconfig result and explain each setting.",
+    "You can tell a DHCP failure (169.254.x.x) from a DNS failure.",
+    "You can locate where a connection breaks using ping step by step."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Treating a 169.254.x.x address as a working connection.",
+      "why": "It means DHCP failed; the computer cannot reach the router or internet.",
+      "fix": "Check the cable or Wi-Fi, then the router, then run ipconfig /renew."
+    },
+    {
+      "mistake": "Giving a printer a static address inside the router's DHCP range.",
+      "why": "The router may hand the same address to another device, causing a conflict.",
+      "fix": "Use an address outside the DHCP range, or reserve it in the router."
+    },
+    {
+      "mistake": "Concluding \"the internet is down\" when only names fail.",
+      "why": "If ping 8.8.8.8 works but names do not, the problem is DNS, not the connection.",
+      "fix": "Check the DNS settings, or run ipconfig /flushdns."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "What does the default gateway do?", "answer": "It is the router that forwards traffic from the local network to other networks and the internet." },
+    { "question": "A PC shows 169.254.10.4. What does it mean?", "answer": "It did not get an address from DHCP (APIPA). Check the physical connection and the router." },
+    { "question": "ping 8.8.8.8 works but ping example.com fails. Where is the problem?", "answer": "Name resolution: DNS." }
+  ],
+  "quizId": "network-ip-basics-quiz",
+  "references": ["RFC 1918: private address space.", "Microsoft Learn: ipconfig and ping command references."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

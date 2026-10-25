@@ -1,0 +1,48 @@
+{
+  "id": "technician-toolkit-quiz",
+  "lessonId": "technician-toolkit",
+  "title": "Technician's toolkit quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "match",
+      "prompt": "Match each tool to its job.",
+      "pairs": [
+        { "left": "PSU tester", "right": "Shows the power supply's output voltages" },
+        { "left": "Cable tester", "right": "Checks each wire of a network cable" },
+        { "left": "Loopback plug", "right": "Tests a network port" },
+        { "left": "POST card", "right": "Shows where startup stopped" },
+        { "left": "Spudger", "right": "Opens cases and clips without scratching" }
+      ],
+      "explanation": "The right tool confirms a cause instead of guessing."
+    },
+    {
+      "kind": "single",
+      "prompt": "A computer crashed overnight. Which Windows tool shows what happened?",
+      "choices": ["Paint", "Event Viewer", "Disk Cleanup", "Character Map"],
+      "correct": 1,
+      "explanation": "Event Viewer (and Reliability Monitor) record errors and crashes."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which tool would you use to test the RAM?",
+      "choices": ["Windows Memory Diagnostic (mdsched.exe)", "ping", "Defragment and Optimize Drives", "A cable tester"],
+      "correct": 0,
+      "explanation": "It runs a memory test at the next restart."
+    },
+    {
+      "kind": "single",
+      "prompt": "Why use a parts tray?",
+      "choices": ["To look professional", "To keep screws sorted so each goes back where it came from", "It is required by law", "To ground the computer"],
+      "correct": 1,
+      "explanation": "Wrong screws can damage parts, and loose screws can short the motherboard."
+    },
+    {
+      "kind": "single",
+      "prompt": "A computer is slow. Which tool shows what is using the CPU and memory?",
+      "choices": ["Task Manager", "Device Manager", "Notepad", "Control Panel → Fonts"],
+      "correct": 0,
+      "explanation": "Task Manager shows resource use by each process."
+    }
+  ]
+}

@@ -28,6 +28,7 @@ export type PartId =
   | "atx-24pin"
   | "eps-8pin"
   | "pcie-power"
+  | "sata-data"
   | "sata-power"
   | "cpu-fan-header";
 
@@ -133,14 +134,22 @@ export const PARTS: Record<PartId, PartInfo> = {
     name: "2.5-inch SATA SSD",
     group: "Storage",
     role: "Extra storage, connected with a SATA data cable and a SATA power cable.",
-    specs: [`Model: ${BRAND.maker} ${BRAND.sata.series} ${BRAND.sata.spec}`, "2.5-inch, SATA 6 Gb/s"],
+    specs: [`Model: ${BRAND.maker} ${BRAND.sata.series} ${BRAND.sata.spec}`, "2.5-inch, SATA 6 Gb/s", "Held by 4 small M3 screws"],
+    caution: "Back up any data before removing a drive that is in use.",
+  },
+  "sata-data": {
+    id: "sata-data",
+    name: "SATA data cable",
+    group: "Storage",
+    role: "Carries data between the SSD and a SATA port on the motherboard.",
+    specs: ["7 pins, L-shaped key", "Some have a small metal latch"],
   },
   psu: {
     id: "psu",
     name: "Power supply unit (PSU)",
     group: "Power",
     role: "Converts AC mains power into +12 V, +5 V and +3.3 V DC for the components.",
-    specs: [`Model: ${BRAND.maker} ${BRAND.psu.series}`, "ATX, 650 W, 80 PLUS Gold", "Under the shroud at the bottom"],
+    specs: [`Model: ${BRAND.maker} ${BRAND.psu.series}`, "ATX, 650 W, 80 PLUS Gold", "Non-modular: its cables are fixed to it", "Held by 4 screws at the back of the case"],
     caution: "Never open a PSU. Its capacitors can hold a dangerous charge even when unplugged.",
   },
   "front-fans": {

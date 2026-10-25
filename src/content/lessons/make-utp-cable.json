@@ -1,0 +1,87 @@
+{
+  "id": "make-utp-cable",
+  "version": 1,
+  "title": "Make a straight-through UTP cable (T568B)",
+  "description": "Terminate a Cat5e or Cat6 cable with RJ45 connectors in the T568B order and test it.",
+  "category": "networking",
+  "difficulty": "beginner",
+  "durationMin": 40,
+  "objectives": [
+    "Arrange the eight wires in the T568B order.",
+    "Strip, trim and crimp an RJ45 connector correctly.",
+    "Test the cable with a cable tester.",
+    "Know when a crossover (T568A to T568B) cable is used."
+  ],
+  "prerequisites": [],
+  "tools": ["Cat5e or Cat6 UTP cable", "RJ45 connectors (and boots, optional)", "RJ45 crimping tool", "Cable stripper or the crimper's blade", "Network cable tester"],
+  "safety": [
+    { "level": "caution", "text": "Crimper and stripper blades are sharp. Cut away from your body and keep fingers clear." },
+    { "level": "caution", "text": "Wear safety glasses when trimming wires: small pieces of copper can fly." }
+  ],
+  "steps": [
+    {
+      "title": "Strip the outer jacket",
+      "body": "Slide on the boot first if you use one. Strip about **2.5 cm (1 inch)** of the outer jacket. Do not nick the insulation of the wires inside.\n\nCut off the nylon string, if any."
+    },
+    {
+      "title": "Untwist and arrange in T568B order",
+      "body": "Untwist the four pairs and straighten the wires. Arrange them flat, side by side, in this order from left to right:\n\n1. White-orange\n2. Orange\n3. White-green\n4. Blue\n5. White-blue\n6. Green\n7. White-brown\n8. Brown\n\nKeep the twists as close to the jacket as possible.",
+      "image": {
+        "src": "t568b-wiring.svg",
+        "alt": "RJ45 plug with the eight T568B wire colours in order from pin 1 to pin 8.",
+        "caption": "Hold the plug with the clip underneath and the gold contacts facing you: pin 1 is on the left."
+      }
+    },
+    {
+      "title": "Trim the wires evenly",
+      "body": "Holding the order, trim all eight wires straight across so about **1.2–1.3 cm** sticks out of the jacket. They must be the same length."
+    },
+    {
+      "title": "Insert into the connector",
+      "body": "Hold the RJ45 connector with the **clip underneath** and the **gold contacts facing you**. Push the wires in until each one reaches the **end** of its channel.\n\nThe outer **jacket must go inside** the connector, so the crimp grips it and protects the wires from being pulled."
+    },
+    {
+      "title": "Crimp and repeat",
+      "body": "Check the colour order one last time through the clear plastic, then squeeze the crimper firmly until it closes fully.\n\nRepeat on the other end with the **same T568B order** for a straight-through cable."
+    },
+    {
+      "title": "Test the cable",
+      "body": "Plug both ends into the cable tester. On a correct straight-through cable the lights go **1 to 8 in the same order** on both units.\n\n- A light that does not come on: an open (broken or not fully inserted) wire.\n- Lights out of order: wires are swapped.\n\nRe-terminate any faulty end."
+    },
+    {
+      "title": "Straight-through or crossover?",
+      "body": "- **Straight-through** (same standard both ends) connects different kinds of devices: computer to switch, router to switch. This is the normal cable.\n- **Crossover** (**T568A** on one end, **T568B** on the other) was used to connect two similar devices directly.\n\nModern network ports have **Auto-MDIX** and work with straight-through cables either way."
+    }
+  ],
+  "expectedResults": [
+    "Both ends show the T568B order through the connector.",
+    "The jacket is gripped inside each connector.",
+    "The tester lights 1 to 8 in order on both ends."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Leaving the wires too long, so the jacket is outside the connector.",
+      "why": "Without strain relief, pulling the cable breaks the wires from the contacts.",
+      "fix": "Trim to about 1.2–1.3 cm so the jacket goes inside."
+    },
+    {
+      "mistake": "Wires not pushed to the end of the connector.",
+      "why": "The contacts cannot pierce wires that do not reach them, so the tester shows open lines.",
+      "fix": "Look at the tip of the connector: all eight copper ends must be visible at the front."
+    },
+    {
+      "mistake": "Swapping orange and green pairs.",
+      "why": "Pins 1, 2, 3 and 6 carry the data on 100 Mb/s links; swapping them splits the pairs and causes errors or no link.",
+      "fix": "Follow the order exactly and check it before crimping."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "What is the T568B order from pin 1?", "answer": "White-orange, orange, white-green, blue, white-blue, green, white-brown, brown." },
+    { "question": "What does a straight-through cable have on both ends?", "answer": "The same wiring standard (T568B on both, or T568A on both)." },
+    { "question": "What is the maximum length of a Cat5e/Cat6 run for Ethernet?", "answer": "100 metres." }
+  ],
+  "quizId": "make-utp-cable-quiz",
+  "references": ["ANSI/TIA-568 cabling standard.", "TESDA Computer Systems Servicing NC II: set up computer networks."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

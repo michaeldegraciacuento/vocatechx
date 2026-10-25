@@ -114,9 +114,11 @@ const GLOW: Record<Highlight, { color: Color; intensity: number }> = {
  * A clickable part. Hovering and selecting tint every material inside it
  * (keeping each material's own glow, such as fan LEDs, when not highlighted).
  */
-export function Selectable({ id, highlight, onSelect, onHover, children }: {
+export function Selectable({ id, highlight, interactive = true, onSelect, onHover, children }: {
   id: PartId;
   highlight: Highlight;
+  /** False while the Hand tool is active: no clicks, no hover. */
+  interactive?: boolean;
   onSelect: (id: PartId) => void;
   onHover: (id: PartId | null) => void;
   children: ReactNode;
@@ -136,12 +138,16 @@ export function Selectable({ id, highlight, onSelect, onHover, children }: {
     invalidate();
   }, [highlight, invalidate]);
 
+  if (!interactive) return <group ref={ref}>{children}</group>;
+
   const stop = (e: ThreeEvent<PointerEvent | MouseEvent>) => e.stopPropagation();
   return (
     <group
       ref={ref}
       onClick={(e) => {
         stop(e);
+        // A drag to rotate that ends over a part is not a click on it.
+        if (e.delta > 4) return;
         onSelect(id);
       }}
       onPointerOver={(e) => {

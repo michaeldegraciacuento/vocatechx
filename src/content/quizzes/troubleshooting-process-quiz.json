@@ -1,0 +1,54 @@
+{
+  "id": "troubleshooting-process-quiz",
+  "lessonId": "troubleshooting-process",
+  "title": "Troubleshooting process quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "order",
+      "prompt": "Put the six troubleshooting steps in order.",
+      "items": [
+        "Identify the problem",
+        "Establish a theory of probable cause",
+        "Test the theory",
+        "Plan and carry out the fix",
+        "Verify full system functionality",
+        "Document the findings"
+      ],
+      "explanation": "Gather information first, test theories one at a time, and always finish by verifying and documenting."
+    },
+    {
+      "kind": "single",
+      "prompt": "A user says their computer \"stopped working\" this morning. What should you do first?",
+      "choices": ["Replace the power supply", "Reinstall Windows", "Ask what happens exactly and what changed recently", "Update the BIOS"],
+      "correct": 2,
+      "explanation": "Identify the problem before changing anything. What changed recently is often the cause."
+    },
+    {
+      "kind": "single",
+      "prompt": "Your first theory turns out to be wrong. What next?",
+      "choices": ["Escalate immediately", "Go back and establish a new theory", "Replace the motherboard", "Close the ticket"],
+      "correct": 1,
+      "explanation": "If a theory is not confirmed, return to step 2 and test the next most likely cause."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which belong in your documentation? Select all that apply.",
+      "choices": ["The symptoms", "The cause you found", "What you did to fix it", "The customer's password"],
+      "correct": [0, 1, 2],
+      "explanation": "Record symptoms, cause, actions and result. Never record passwords."
+    },
+    {
+      "kind": "single",
+      "prompt": "Why should you test the simplest causes first?",
+      "choices": [
+        "They are usually the most expensive",
+        "They are common, quick to check and rule out",
+        "The customer expects it",
+        "Complex causes never happen"
+      ],
+      "correct": 1,
+      "explanation": "Loose cables, switches and recent changes cause many faults and take seconds to check."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "id": "windows-install-usb",
+  "version": 1,
+  "title": "Install Windows 11 from a USB drive",
+  "description": "Check the requirements, make a bootable installer, boot from it and complete a clean installation.",
+  "category": "windows-maintenance",
+  "difficulty": "intermediate",
+  "durationMin": 45,
+  "objectives": [
+    "Check that a computer meets the Windows 11 requirements.",
+    "Create a bootable Windows 11 USB drive with Microsoft's Media Creation Tool.",
+    "Boot from the USB drive using the boot menu.",
+    "Complete a clean installation and check activation and drivers."
+  ],
+  "prerequisites": ["pc-major-components"],
+  "tools": ["USB flash drive, 8 GB or larger (it will be erased)", "A working PC with internet access", "Genuine Windows licence or digital entitlement"],
+  "safety": [
+    { "level": "danger", "text": "A clean installation erases the selected drive. Back up the customer's files first and confirm which drive you are installing to." },
+    { "level": "warning", "text": "Only use Windows from Microsoft and genuine licences. Never use \"activators\" or modified installers: they are illegal and commonly contain malware." }
+  ],
+  "steps": [
+    {
+      "title": "Check the requirements",
+      "body": "Windows 11 needs at least:\n\n- A compatible 64-bit processor, 1 GHz or faster with 2 or more cores\n- **4 GB RAM** and **64 GB** storage\n- **UEFI** firmware with **Secure Boot** capability\n- **TPM 2.0**\n- A DirectX 12 compatible graphics card\n\nMicrosoft's **PC Health Check** app tells you whether a computer qualifies. TPM and Secure Boot are often just switched off in the UEFI settings."
+    },
+    {
+      "title": "Back up the data",
+      "body": "Copy the customer's documents, photos, browser data and any licence keys for their software to an external drive or cloud storage. Confirm the backup opens before you continue."
+    },
+    {
+      "title": "Create the installation USB",
+      "body": "1. On a working PC, download the **Media Creation Tool** from Microsoft's Windows 11 download page.\n2. Insert a USB drive of 8 GB or more. **Everything on it will be erased.**\n3. Run the tool, choose the language and edition, select **USB flash drive** and pick your drive.\n4. Wait for it to download and finish."
+    },
+    {
+      "title": "Boot from the USB drive",
+      "body": "1. Insert the USB drive into the computer and turn it on.\n2. Press the **boot menu key** right away. It differs by maker: commonly **F12, F11, F9, F8** or **Esc**.\n3. Choose the USB drive, listed under UEFI.\n\nIf it does not appear, enter the UEFI setup (often **Del** or **F2**) and check the boot order and that USB boot is enabled."
+    },
+    {
+      "title": "Run the installer",
+      "body": "1. Choose your language, keyboard and click **Install now**.\n2. Enter a product key, or choose **I don't have a product key** if the PC had Windows activated before: it activates automatically from its digital licence.\n3. Choose the correct edition (the one the licence covers).\n4. Choose **Custom: Install Windows only**.\n5. Select the target drive. To start clean, delete its old partitions and install to the **unallocated space**: Windows creates the partitions it needs.\n\nDouble-check the drive size so you do not erase the wrong disk."
+    },
+    {
+      "title": "Finish setup and check the system",
+      "body": "1. Follow the setup screens (region, account, privacy).\n2. Run **Windows Update** until no more updates are offered; it installs most drivers.\n3. Open **Device Manager** and check for devices with a yellow warning icon. Install missing drivers from the computer or motherboard maker's website.\n4. Check activation in **Settings → System → Activation**.\n5. Restore the customer's files."
+    }
+  ],
+  "expectedResults": [
+    "Windows 11 starts normally and is activated.",
+    "Device Manager shows no missing drivers.",
+    "The customer's files are restored."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Installing to the wrong drive.",
+      "why": "Deleting partitions on the wrong disk destroys data that may not be backed up.",
+      "fix": "Identify the drive by its size, and disconnect extra data drives during installation if unsure."
+    },
+    {
+      "mistake": "Assuming an old PC cannot run Windows 11 because the check fails.",
+      "why": "TPM (often called fTPM or PTT) and Secure Boot are frequently just disabled in the UEFI settings.",
+      "fix": "Check the UEFI settings before deciding the hardware is unsupported."
+    },
+    {
+      "mistake": "Choosing the wrong edition.",
+      "why": "A Home licence will not activate Windows Pro, and the reverse.",
+      "fix": "Install the edition the licence covers."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Which security features does Windows 11 require?", "answer": "TPM 2.0 and UEFI with Secure Boot capability." },
+    { "question": "How do you boot from the USB drive?", "answer": "Press the boot menu key at startup (often F12, F11, F9, F8 or Esc, depending on the maker) and choose the USB drive." },
+    { "question": "A PC had activated Windows before. Do you need a product key for a reinstall?", "answer": "Usually not: choose \"I don't have a product key\" and it activates from its digital licence." }
+  ],
+  "quizId": "windows-install-usb-quiz",
+  "references": ["Microsoft: Windows 11 specifications and system requirements.", "Microsoft: Download Windows 11 (Media Creation Tool)."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

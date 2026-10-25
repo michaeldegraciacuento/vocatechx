@@ -1,0 +1,78 @@
+{
+  "id": "software-maintenance",
+  "version": 1,
+  "title": "Software and data maintenance",
+  "description": "Keep Windows healthy with updates, storage clean-up, the right drive optimisation, malware scans and a backup plan.",
+  "category": "preventive-maintenance",
+  "difficulty": "beginner",
+  "durationMin": 30,
+  "objectives": [
+    "Keep Windows, drivers and applications updated.",
+    "Free up storage space safely.",
+    "Know why hard drives are defragmented but SSDs are not.",
+    "Apply the 3-2-1 backup rule."
+  ],
+  "prerequisites": [],
+  "tools": ["Administrator account", "External drive or cloud storage for backups"],
+  "safety": [
+    { "level": "caution", "text": "Check what you are deleting. Never delete files from Windows system folders by hand." },
+    { "level": "caution", "text": "Do not interrupt the computer while updates install: it can leave Windows unable to start." }
+  ],
+  "steps": [
+    {
+      "title": "Update everything",
+      "body": "- **Windows Update:** Settings → Windows Update → Check for updates. Install security updates promptly.\n- **Drivers:** most come through Windows Update. Graphics and chipset drivers can be newer on the maker's website.\n- **Applications:** update browsers and other software, or remove programs that are no longer used."
+    },
+    {
+      "title": "Free up storage",
+      "body": "Windows needs free space to update and run well; keep at least **15–20%** free.\n\n- **Settings → System → Storage** shows what is using space and **Cleanup recommendations**.\n- Turn on **Storage Sense** to delete temporary files automatically.\n- Uninstall unused programs in **Settings → Apps**."
+    },
+    {
+      "title": "Optimise the drives correctly",
+      "body": "Open **Defragment and Optimize Drives**:\n\n- **Hard disk drives (HDD):** defragmenting puts the pieces of files back together, which speeds them up.\n- **SSDs:** do **not** defragment. Windows sends **TRIM** instead, which keeps the SSD fast. Defragmenting an SSD only adds wear.\n\nLeave the scheduled optimisation on: Windows chooses the right method for each drive."
+    },
+    {
+      "title": "Scan for malware",
+      "body": "**Windows Security** (Microsoft Defender) protects in real time. Run a **Quick scan** regularly and a **Full scan** if you suspect infection. Only use one real-time antivirus at a time; two conflict."
+    },
+    {
+      "title": "Check drive health",
+      "body": "Drives warn before they fail through **S.M.A.R.T.** data. A disk health tool (such as CrystalDiskInfo) reads it. Reallocated or pending sectors on an HDD, or low remaining life on an SSD, mean: back up and plan a replacement."
+    },
+    {
+      "title": "Back up with the 3-2-1 rule",
+      "body": "- **3** copies of important data,\n- on **2** different types of storage (for example the PC and an external drive),\n- with **1** copy off-site (cloud, or a drive kept elsewhere).\n\nTest restoring a file now and then: a backup you cannot restore is not a backup."
+    }
+  ],
+  "expectedResults": [
+    "Windows and drivers are up to date.",
+    "At least 15–20% of the system drive is free.",
+    "The customer has a working 3-2-1 backup."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Defragmenting an SSD.",
+      "why": "It does not speed up an SSD and adds unnecessary wear.",
+      "fix": "Let Windows optimise it with TRIM."
+    },
+    {
+      "mistake": "Installing two real-time antivirus programs.",
+      "why": "They conflict, slow the computer and can block each other.",
+      "fix": "Use one: Microsoft Defender is built in."
+    },
+    {
+      "mistake": "Keeping the only backup on the same computer.",
+      "why": "A drive failure, theft or ransomware takes the backup too.",
+      "fix": "Follow 3-2-1 with an external and an off-site copy."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Why shouldn't you defragment an SSD?", "answer": "It gives no speed benefit and adds wear. Windows keeps SSDs fast with TRIM." },
+    { "question": "What does 3-2-1 mean?", "answer": "3 copies, on 2 types of storage, 1 kept off-site." },
+    { "question": "How much free space should a system drive keep?", "answer": "About 15–20%." }
+  ],
+  "quizId": "software-maintenance-quiz",
+  "references": ["Microsoft Support: Free up drive space in Windows.", "Microsoft Support: Defragment your Windows 10/11 PC."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

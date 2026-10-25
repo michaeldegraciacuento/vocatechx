@@ -1,0 +1,79 @@
+{
+  "id": "pc-cleaning",
+  "version": 1,
+  "title": "Clean a desktop PC safely",
+  "description": "Remove dust from the inside of a computer and clean its peripherals without causing damage.",
+  "category": "preventive-maintenance",
+  "difficulty": "beginner",
+  "durationMin": 30,
+  "objectives": [
+    "Prepare a computer and the workspace for cleaning.",
+    "Remove dust with compressed air the safe way.",
+    "Clean the keyboard, mouse and monitor with the right materials.",
+    "Plan a regular cleaning schedule."
+  ],
+  "prerequisites": ["esd-safety-basics"],
+  "tools": ["Compressed air (canned or an electric duster)", "Anti-static wrist strap", "Soft anti-static brush", "Isopropyl alcohol, 90% or stronger", "Lint-free or microfibre cloths", "Dust mask"],
+  "safety": [
+    { "level": "warning", "text": "Unplug the computer and wear a grounded wrist strap before cleaning inside." },
+    { "level": "caution", "text": "Never use a household vacuum inside a computer: it builds up static electricity. Only use an ESD-safe vacuum." },
+    { "level": "caution", "text": "Never spray liquid directly onto equipment. Put it on the cloth first." }
+  ],
+  "steps": [
+    {
+      "title": "Prepare",
+      "body": "Shut down, unplug, press the power button to drain power, and put on the wrist strap. Take the computer somewhere well ventilated or outdoors, since a lot of dust will come out. Wear a dust mask."
+    },
+    {
+      "title": "Blow out the dust",
+      "body": "Open the side panel and use short bursts of compressed air:\n\n- **Hold each fan still** with a finger or a non-metal tool while blowing. A spinning fan can be damaged and can push current back into the board.\n- Keep the can **upright**. Tilted, it can spray freezing liquid propellant.\n- Work from the top down and blow dust **out** of the case, not deeper in.\n- Clear the CPU cooler fins, graphics card, PSU fan grille (from outside) and the dust filters."
+    },
+    {
+      "title": "Clean the dust filters",
+      "body": "Most cases have removable filters at the front, top or bottom. Take them out, tap or rinse them, and let them dry **completely** before refitting."
+    },
+    {
+      "title": "Clean the peripherals",
+      "body": "- **Keyboard:** turn it upside down and tap; blow between the keys; wipe the keys with a cloth lightly dampened with isopropyl alcohol.\n- **Mouse:** wipe the body and feet; clear the sensor window with a dry cotton bud.\n- **Monitor:** wipe gently with a dry microfibre cloth. For marks, use a cloth slightly dampened with water or screen cleaner. Avoid ammonia or strong solvents, which damage screen coatings."
+    },
+    {
+      "title": "Check while you are inside",
+      "body": "Cleaning is a good time to spot problems:\n\n- Fans that do not spin freely or are noisy\n- Swollen or leaking capacitors on the motherboard\n- Loose cables and connectors\n- Dust caked onto heatsinks, which causes overheating\n\nNote anything you find for the customer."
+    },
+    {
+      "title": "Close up and schedule",
+      "body": "Refit the panel, reconnect and confirm the computer starts. Check temperatures if you can.\n\nA dusty environment (near a road, a workshop, pets) needs cleaning every **3 months**; an office every **6–12 months**."
+    }
+  ],
+  "expectedResults": [
+    "Fans, heatsinks and filters are free of dust.",
+    "Peripherals are clean and working.",
+    "The computer starts normally and runs cooler."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Letting fans spin freely under compressed air.",
+      "why": "Over-spinning can damage the fan bearings and the fan can act as a generator.",
+      "fix": "Hold each fan still while you blow it out."
+    },
+    {
+      "mistake": "Using a household vacuum cleaner inside the case.",
+      "why": "It generates static electricity that can damage components.",
+      "fix": "Use compressed air or an ESD-safe vacuum."
+    },
+    {
+      "mistake": "Spraying cleaner straight onto a monitor or keyboard.",
+      "why": "Liquid runs inside and can short circuits.",
+      "fix": "Dampen the cloth, not the device."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Why hold the fans still while using compressed air?", "answer": "Spinning them too fast can damage the bearings, and a spinning fan can generate current back into the board." },
+    { "question": "What should you use to clean a monitor?", "answer": "A dry microfibre cloth, or one slightly dampened with water or screen cleaner. No ammonia or strong solvents." },
+    { "question": "How often should a PC in a dusty place be cleaned?", "answer": "About every 3 months." }
+  ],
+  "quizId": "pc-cleaning-quiz",
+  "references": ["Your case and component manuals: cleaning and dust filter sections.", "TESDA Computer Systems Servicing NC II: maintain computer systems and networks."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

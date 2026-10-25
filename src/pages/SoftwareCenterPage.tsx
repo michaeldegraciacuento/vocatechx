@@ -104,13 +104,15 @@ function SoftwareCenterPage() {
       </div>
       <ErrorNote message={openFolder.error} />
 
-      {/* VocaTechX's manifest always requests administrator rights, so this only
-          shows if it was started some other way (e.g. a dev build from a normal terminal). */}
+      {/* Release builds always request administrator rights; dev builds do not
+          (see build.rs), so in development this shows unless the terminal is elevated. */}
       {!lib.elevated && (
         <div className="rounded-2xl border border-[#fde68a] bg-[#fffbeb] px-5 py-4">
           <p className="m-0 text-[13px] font-semibold text-[#92400e]">Installing apps needs administrator rights</p>
           <p className="m-0 mt-1 text-xs leading-[1.6] text-[#a16207]">
-            Close VocaTechX and start it again, accepting the administrator prompt. You can still browse and set up apps now.
+            {import.meta.env.DEV
+              ? "Development build: run `npm run tauri dev` from a terminal opened as administrator to test installs. You can still browse and set up apps now."
+              : "Close VocaTechX and start it again, accepting the administrator prompt. You can still browse and set up apps now."}
           </p>
         </div>
       )}

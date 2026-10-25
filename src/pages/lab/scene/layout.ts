@@ -24,6 +24,10 @@ export const ATX24 = onBoard(11, 4);
 export const EPS8 = onBoard(-10, 14);
 export const CPU_FAN_HEADER = onBoard(1.8, 14.4);
 
+/** The PSU's centre in its bay under the shroud, and the SSD on the shroud. */
+export const PSU_BAY: Vec3 = [-14.5, -18.3, 8.5];
+export const SSD_MOUNT: Vec3 = [12, CASE.shroudTop + 0.6, 8];
+
 /** Where each removed part rests on the anti-static mat, to the right of the case. */
 // Each pose puts the part's lowest point on the mat's surface (y ≈ -23.2).
 export const BENCH = {
@@ -33,9 +37,11 @@ export const BENCH = {
   cpu: [43, -21.3, 19] as Vec3,
   gpu: [38, -18.9, -2] as Vec3,
   m2: [50, -22.1, 19] as Vec3,
+  psu: [78.5, -18.95, 4] as Vec3,
+  sataSsd: [79, -22.9, 19] as Vec3,
   sidePanel: [0, 0, -16] as Vec3,
 };
-export const MAT = { x: 50, z: 10, width: 44, depth: 28, y: -23.4 };
+export const MAT = { x: 57, z: 10, width: 58, depth: 28, y: -23.4 };
 
 /** How far a part travels straight up out of its socket or slot before moving away. */
 export const LIFT = {
@@ -44,6 +50,9 @@ export const LIFT = {
   cpu: [0, 0, 6] as Vec3,
   gpu: [0, 0, 10] as Vec3,
   m2: [0, 0, 3] as Vec3,
+  /** The PSU slides out through the open side, the SSD lifts off the shroud. */
+  psu: [0, 0, 18] as Vec3,
+  ssd: [0, 4, 6] as Vec3,
 };
 
 /** Extra spacing in the exploded view, applied to installed parts. */
@@ -65,7 +74,7 @@ export const CAMERA_VIEWS: Record<CameraView, { position: Vec3; target: Vec3 }> 
   gpu: { position: [0, 8, 52], target: [-6, -1, 6] },
   m2: { position: [-10, 12, 30], target: [-12, 4, 1] },
   power: { position: [8, 2, 58], target: [-2, -2, 5] },
-  bench: { position: [50, 10, 66], target: [50, -17, 9] },
+  bench: { position: [57, 12, 78], target: [57, -17, 9] },
 };
 
 export const add = (a: Vec3, b: Vec3, scale = 1): Vec3 => [a[0] + b[0] * scale, a[1] + b[1] * scale, a[2] + b[2] * scale];

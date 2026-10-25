@@ -1,0 +1,48 @@
+{
+  "id": "pc-cleaning-quiz",
+  "lessonId": "pc-cleaning",
+  "title": "PC cleaning quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "single",
+      "prompt": "What should you do with the fans while blowing them out with compressed air?",
+      "choices": ["Let them spin freely", "Hold them still", "Remove all of them first", "Spray them with alcohol"],
+      "correct": 1,
+      "explanation": "Over-spinning fans can be damaged and can push current back into the board."
+    },
+    {
+      "kind": "multi",
+      "prompt": "Which are safe cleaning practices? Select all that apply.",
+      "choices": [
+        "Keep the compressed-air can upright",
+        "Use a household vacuum cleaner inside the case",
+        "Dampen the cloth instead of spraying the device",
+        "Let washed dust filters dry completely"
+      ],
+      "correct": [0, 2, 3],
+      "explanation": "Household vacuums build up static, so they are never used inside a computer."
+    },
+    {
+      "kind": "single",
+      "prompt": "Which is the best cleaner for a keyboard's keys?",
+      "choices": ["Water poured over the keys", "Isopropyl alcohol on a lint-free cloth", "Window cleaner with ammonia", "Bleach"],
+      "correct": 1,
+      "explanation": "Isopropyl alcohol evaporates quickly and does not leave residue."
+    },
+    {
+      "kind": "single",
+      "prompt": "While cleaning, you notice bulging capacitors on the motherboard. What does that mean?",
+      "choices": ["Nothing; it is normal", "They are failing and the board may become unreliable", "The board needs more dust filters", "The RAM needs replacing"],
+      "correct": 1,
+      "explanation": "Swollen or leaking capacitors are a sign of a failing board. Tell the customer."
+    },
+    {
+      "kind": "single",
+      "prompt": "A computer sits next to a dusty road. How often should it be cleaned?",
+      "choices": ["Every 5 years", "About every 3 months", "Never", "Only when it stops working"],
+      "correct": 1,
+      "explanation": "Dusty environments need frequent cleaning to prevent overheating."
+    }
+  ]
+}

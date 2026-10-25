@@ -1,0 +1,78 @@
+{
+  "id": "windows-recovery-tools",
+  "version": 1,
+  "title": "Repair Windows with the built-in recovery tools",
+  "description": "Use Windows Recovery Environment, Safe Mode, System File Checker, DISM and Reset this PC to fix a Windows installation that will not start or behaves badly.",
+  "category": "windows-maintenance",
+  "difficulty": "intermediate",
+  "durationMin": 40,
+  "objectives": [
+    "Open the Windows Recovery Environment (WinRE).",
+    "Choose the right repair tool for the symptom, least destructive first.",
+    "Repair system files with DISM and SFC.",
+    "Know what Reset this PC keeps and removes."
+  ],
+  "prerequisites": ["troubleshooting-process"],
+  "tools": ["Administrator account", "Windows installation USB (if WinRE does not start)"],
+  "safety": [
+    { "level": "warning", "text": "Back up the customer's files before Reset this PC or any option that can remove data." },
+    { "level": "caution", "text": "Use the least destructive repair first. Resetting or reinstalling should be the last resort." }
+  ],
+  "steps": [
+    {
+      "title": "Open the recovery environment",
+      "body": "Any of these opens **WinRE**:\n\n- Hold **Shift** while clicking **Restart**.\n- **Settings → System → Recovery → Advanced startup → Restart now**.\n- Windows opens it automatically after startup fails twice in a row.\n- Boot from a Windows installation USB and choose **Repair your computer**.\n\nThen go to **Troubleshoot → Advanced options**."
+    },
+    {
+      "title": "Try Startup Repair and System Restore",
+      "body": "- **Startup Repair** fixes common problems that stop Windows from loading.\n- **System Restore** returns system files and settings to an earlier restore point. It does not remove personal files, but programs installed after that point are removed.\n- **Uninstall Updates** removes the latest quality or feature update if a bad update caused the fault."
+    },
+    {
+      "title": "Use Safe Mode",
+      "body": "**Safe Mode** starts Windows with only essential drivers. Use it to remove a bad driver or program, or to scan for malware.\n\nIn WinRE: **Troubleshoot → Advanced options → Startup Settings → Restart**, then press **4** (Safe Mode) or **5** (Safe Mode with Networking)."
+    },
+    {
+      "title": "Repair system files with DISM and SFC",
+      "body": "Open **Command Prompt as administrator** and run:\n\n```\nDISM /Online /Cleanup-Image /RestoreHealth\n```\n\nThis repairs the Windows component store that SFC uses. Then run:\n\n```\nsfc /scannow\n```\n\nThis checks protected system files and replaces damaged ones. Restart when they finish."
+    },
+    {
+      "title": "Check the disk and the memory",
+      "body": "- `chkdsk C: /f` checks the file system and fixes errors. On the system drive it runs at the next restart.\n- **Windows Memory Diagnostic** (`mdsched.exe`) tests the RAM at restart. Memory errors cause crashes that no software repair can fix."
+    },
+    {
+      "title": "Reset this PC (last resort)",
+      "body": "**Settings → System → Recovery → Reset PC**, or in WinRE **Troubleshoot → Reset this PC**:\n\n- **Keep my files** reinstalls Windows but keeps personal files. Installed programs and settings are removed.\n- **Remove everything** erases files, programs and settings.\n\nBack up first, even when choosing Keep my files."
+    }
+  ],
+  "expectedResults": [
+    "You can open WinRE in more than one way.",
+    "You choose repairs from least to most destructive.",
+    "Windows starts normally and SFC reports no remaining integrity violations."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Going straight to Reset this PC.",
+      "why": "It removes programs and settings, and the problem may have had a much simpler fix.",
+      "fix": "Try Startup Repair, System Restore, Safe Mode and SFC/DISM first."
+    },
+    {
+      "mistake": "Running SFC in a normal Command Prompt.",
+      "why": "SFC needs administrator rights and reports an error without them.",
+      "fix": "Right-click Command Prompt or Terminal and choose Run as administrator."
+    },
+    {
+      "mistake": "Ignoring hardware as the cause.",
+      "why": "Failing RAM or a failing drive causes repeated corruption that software repairs cannot fix.",
+      "fix": "Run Memory Diagnostic and check the drive's health (S.M.A.R.T.)."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "What does System Restore remove?", "answer": "Programs, drivers and updates installed after the restore point. It keeps personal files." },
+    { "question": "In which order do you run DISM and SFC?", "answer": "DISM /Online /Cleanup-Image /RestoreHealth first, then sfc /scannow." },
+    { "question": "What is the difference between the two Reset this PC options?", "answer": "Keep my files keeps personal files but removes programs and settings; Remove everything erases all of it." }
+  ],
+  "quizId": "windows-recovery-tools-quiz",
+  "references": ["Microsoft Support: Recovery options in Windows.", "Microsoft Support: Use the System File Checker tool."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

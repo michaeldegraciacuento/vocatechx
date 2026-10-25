@@ -1,0 +1,72 @@
+{
+  "id": "technician-toolkit",
+  "version": 1,
+  "title": "The technician's toolkit",
+  "description": "Know the hand tools, testers and Windows diagnostic tools a computer technician uses, and what each one is for.",
+  "category": "tools-diagnostics",
+  "difficulty": "beginner",
+  "durationMin": 25,
+  "objectives": [
+    "Name the essential hand tools and their uses.",
+    "Name the testers used for power, network and startup faults.",
+    "Choose the right Windows tool to investigate a problem."
+  ],
+  "prerequisites": ["esd-safety-basics"],
+  "tools": ["A technician's toolkit, if available, to identify each item"],
+  "safety": [
+    { "level": "caution", "text": "Use the right size screwdriver. A worn or wrong-size bit strips screw heads and can slip onto the motherboard." },
+    { "level": "caution", "text": "Do not use magnetised screwdrivers near hard drives or floppy media, and never leave loose screws inside a case." }
+  ],
+  "steps": [
+    {
+      "title": "Hand tools",
+      "body": "- **Phillips #2 screwdriver:** fits most PC screws; a **#1** or **#0** for laptops and M.2 screws.\n- **Anti-static wrist strap and mat:** protect components from ESD.\n- **Parts tray:** keeps screws separate and sorted.\n- **Plastic spudger / pry tool:** opens laptop cases and clips without scratching.\n- **Tweezers and a flashlight:** retrieve dropped screws, see into dark corners.\n- **Cable ties or Velcro straps:** tidy cables for airflow."
+    },
+    {
+      "title": "Testers",
+      "body": "- **Multimeter:** measures voltage, resistance and continuity.\n- **PSU tester:** plugs into the power supply's connectors and shows each voltage, safely.\n- **POST card / debug display:** shows a code telling you where startup stopped (many boards have built-in debug LEDs instead).\n- **Network cable tester:** checks each wire of a cable.\n- **Loopback plug:** tests a network port by sending its signal back to itself.\n- **Crimper and stripper:** make network cables."
+    },
+    {
+      "title": "Supplies",
+      "body": "- **Thermal paste** for reinstalling coolers\n- **Isopropyl alcohol** (90%+) and lint-free cloths\n- **Compressed air** for dust\n- **Bootable USB drives:** a Windows installer and a diagnostics or antivirus rescue tool"
+    },
+    {
+      "title": "Windows diagnostic tools",
+      "body": "- **Task Manager** (Ctrl+Shift+Esc): CPU, memory, disk and network use; startup programs.\n- **Device Manager**: hardware and drivers; yellow icons mean a problem.\n- **Event Viewer**: error logs, useful for crashes and failed services.\n- **Reliability Monitor**: a timeline of crashes and changes.\n- **Windows Memory Diagnostic** (`mdsched.exe`): tests RAM.\n- **Command Prompt tools**: `ipconfig`, `ping`, `sfc`, `chkdsk`.\n- **VocaTechX**: Network Center, Printer & Devices and the AI Troubleshooter bring many checks together."
+    },
+    {
+      "title": "Match the tool to the job",
+      "body": "Before you open a case, decide what you need to learn and pick the tool that tells you:\n\n- Suspect power → PSU tester or multimeter\n- Suspect RAM → Memory Diagnostic, or reseat and test one module at a time\n- Suspect a cable → cable tester\n- A crash → Event Viewer and Reliability Monitor\n- Slow computer → Task Manager"
+    }
+  ],
+  "expectedResults": [
+    "You can name each tool and say what it is used for.",
+    "You can choose the right tool for a symptom."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Using a flat screwdriver or a worn bit on Phillips screws.",
+      "why": "It slips and strips the screw head, and can scratch the board.",
+      "fix": "Use the correct size Phillips bit and press firmly."
+    },
+    {
+      "mistake": "Mixing screws from different parts.",
+      "why": "Screws differ in length and thread; a wrong one can damage the part.",
+      "fix": "Use a parts tray and keep screws with the part they came from."
+    },
+    {
+      "mistake": "Guessing instead of measuring.",
+      "why": "Replacing parts at random wastes time and money.",
+      "fix": "Use the tester or tool that confirms the cause first."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Which tool shows where startup stops?", "answer": "A POST card / debug display (or the motherboard's debug LEDs)." },
+    { "question": "Which Windows tool shows error logs after a crash?", "answer": "Event Viewer (and Reliability Monitor)." },
+    { "question": "What screwdriver fits most desktop PC screws?", "answer": "A Phillips #2." }
+  ],
+  "quizId": "technician-toolkit-quiz",
+  "references": ["TESDA Computer Systems Servicing NC II: use hand tools and test equipment."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

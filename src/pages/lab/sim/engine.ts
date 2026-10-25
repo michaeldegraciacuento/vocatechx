@@ -29,6 +29,13 @@ export type SimState = {
   socketOpen: boolean;
   /** The M.2 drive, and the screw that holds it (it sits in the standoff when no drive is fitted). */
   m2: { installed: boolean; screw: boolean };
+  /** The PSU's cables plugged into the motherboard: main 24-pin and CPU 8-pin. */
+  atx24: boolean;
+  eps8: boolean;
+  /** The 2.5-inch SATA SSD: its screws and its two cables. */
+  sata: { installed: boolean; screws: boolean; data: boolean; power: boolean };
+  /** The power supply and the screws holding it to the back of the case. */
+  psu: { installed: boolean; screws: boolean };
 };
 
 /** A fully assembled, plugged-in computer with the side panel on. */
@@ -45,6 +52,10 @@ export const ASSEMBLED: SimState = {
   cpu: { installed: true, orientation: "aligned" },
   socketOpen: false,
   m2: { installed: true, screw: true },
+  atx24: true,
+  eps8: true,
+  sata: { installed: true, screws: true, data: true, power: true },
+  psu: { installed: true, screws: true },
 };
 
 export type Action =
@@ -81,6 +92,22 @@ export type Action =
   | { type: "install-m2-screw" }
   | { type: "remove-m2" }
   | { type: "insert-m2" }
+  | { type: "disconnect-atx24" }
+  | { type: "connect-atx24" }
+  | { type: "disconnect-eps8" }
+  | { type: "connect-eps8" }
+  | { type: "disconnect-sata-data" }
+  | { type: "connect-sata-data" }
+  | { type: "disconnect-sata-power" }
+  | { type: "connect-sata-power" }
+  | { type: "remove-ssd-screws" }
+  | { type: "install-ssd-screws" }
+  | { type: "remove-ssd" }
+  | { type: "insert-ssd" }
+  | { type: "remove-psu-screws" }
+  | { type: "install-psu-screws" }
+  | { type: "remove-psu" }
+  | { type: "install-psu" }
   | { type: "identify"; part: PartId };
 
 export type ActionType = Action["type"];
@@ -116,8 +143,21 @@ export function unfinished(state: SimState): string[] {
   if (state.gpu.installed && !state.gpu.screws) todo.push("refit the graphics card's bracket screws");
   if (state.gpu.installed && !state.gpu.power) todo.push("reconnect the graphics card's power cable");
   if (state.m2.installed && !state.m2.screw) todo.push("secure the M.2 drive with its screw");
+  if (!state.psu.installed) todo.push("install the power supply");
+  else {
+    if (!state.psu.screws) todo.push("fit the power supply's screws");
+    if (!state.atx24) todo.push("connect the 24-pin ATX cable");
+    if (!state.eps8) todo.push("connect the 8-pin CPU cable");
+  }
+  if (state.sata.installed) {
+    if (!state.sata.screws) todo.push("fit the SSD's screws");
+    if (!state.sata.data) todo.push("connect the SSD's SATA data cable");
+    if (!state.sata.power) todo.push("connect the SSD's SATA power cable");
+  }
   return todo;
 }
+
+const NO_PSU = "Install the power supply first; this cable comes from it.";
 
 export function apply(state: SimState, action: Action): Result {
   if (action.type === "identify") return ok(state, "");
@@ -215,6 +255,7 @@ export function apply(state: SimState, action: Action): Result {
 
     case "connect-gpu-power":
       if (!s.gpu.installed) return no("invalid", "Install the graphics card first.");
+      if (!s.psu.installed) return no("order", NO_PSU);
       if (s.gpu.power) return no("invalid", "The power cable is already connected.");
       s.gpu.power = true;
       return ok(s, "8-pin PCIe cable pushed in until its latch clicked.");
@@ -354,6 +395,106 @@ export function apply(state: SimState, action: Action): Result {
       if (s.m2.screw) return no("order", "Remove the screw from the standoff first; the drive must lie flat over it.");
       s.m2.installed = true;
       return ok(s, "Drive inserted into the slot at about 30°, notch matching the key. Press it flat and secure it.");
+
+    case "disconnect-atx24":
+      if (!s.atx24) return no("invalid", "The 24-pin cable is already disconnected.");
+      s.atx24 = false;
+      return ok(s, "Squeezed the latch on the side of the 24-pin plug and pulled it straight out, rocking gently end to end. Never pull by the wires.");
+
+    case "connect-atx24":
+      if (s.atx24) return no("invalid", "The 24-pin cable is already connected.");
+      if (!s.psu.installed) return no("order", NO_PSU);
+      s.atx24 = true;
+      return ok(s, "24-pin plug lined up with its latch and pushed in until it clicked. It only fits one way.");
+
+    case "disconnect-eps8":
+      if (!s.eps8) return no("invalid", "The 8-pin CPU cable is already disconnected.");
+      s.eps8 = false;
+      return ok(s, "Pressed the latch and pulled the 8-pin CPU (EPS) plug straight out.");
+
+    case "connect-eps8":
+      if (s.eps8) return no("invalid", "The 8-pin CPU cable is already connected.");
+      if (!s.psu.installed) return no("order", NO_PSU);
+      s.eps8 = true;
+      return ok(s, "Cable labelled CPU pushed into the CPU_PWR header until it clicked. A PCIe cable looks similar but is keyed differently. Never force it.");
+
+    case "disconnect-sata-data":
+      if (!s.sata.installed || !s.sata.data) return no("invalid", "The SATA data cable is not connected.");
+      s.sata.data = false;
+      return ok(s, "SATA data cable unplugged from the SSD. Many have a small metal latch: press it first.");
+
+    case "connect-sata-data":
+      if (!s.sata.installed) return no("invalid", "Install the SSD first.");
+      if (s.sata.data) return no("invalid", "The data cable is already connected.");
+      s.sata.data = true;
+      return ok(s, "SATA data cable connected; its L-shaped key only fits one way. The other end goes to a SATA port on the motherboard.");
+
+    case "disconnect-sata-power":
+      if (!s.sata.installed || !s.sata.power) return no("invalid", "The SATA power cable is not connected.");
+      s.sata.power = false;
+      return ok(s, "SATA power cable pulled straight out of the SSD.");
+
+    case "connect-sata-power":
+      if (!s.sata.installed) return no("invalid", "Install the SSD first.");
+      if (s.sata.power) return no("invalid", "The power cable is already connected.");
+      if (!s.psu.installed) return no("order", NO_PSU);
+      s.sata.power = true;
+      return ok(s, "SATA power cable connected, L-shaped key matching the drive.");
+
+    case "remove-ssd-screws":
+      if (!s.sata.installed || !s.sata.screws) return no("invalid", "There are no SSD screws to remove.");
+      s.sata.screws = false;
+      return ok(s, "Small screws removed from the drive mount. 2.5-inch drives use fine M3 screws: keep them in a tray.");
+
+    case "install-ssd-screws":
+      if (!s.sata.installed) return no("invalid", "Install the SSD first.");
+      if (s.sata.screws) return no("invalid", "The SSD's screws are already in.");
+      s.sata.screws = true;
+      return ok(s, "SSD screwed into its mount. Snug is enough.");
+
+    case "remove-ssd":
+      if (!s.sata.installed) return no("invalid", "The SSD is not installed.");
+      if (s.sata.data || s.sata.power) return no("forcing", "Its cables are still connected. Pulling the drive out would strain or break the SATA connectors. Disconnect both first.");
+      if (s.sata.screws) return no("forcing", "The screws still hold the drive to its mount. Remove them first.");
+      s.sata.installed = false;
+      return ok(s, "SSD lifted out and placed on the mat. Before replacing a drive with data on it, make sure the data is backed up.");
+
+    case "insert-ssd":
+      if (s.sata.installed) return no("invalid", "The SSD is already installed.");
+      s.sata = { installed: true, screws: false, data: false, power: false };
+      return ok(s, "SSD placed in its mount with the connectors facing the cable side. Now fit the screws and connect both cables.");
+
+    case "remove-psu-screws":
+      if (!s.psu.installed || !s.psu.screws) return no("invalid", "There are no PSU screws to remove.");
+      s.psu.screws = false;
+      return ok(s, "The 4 screws at the back of the case removed. Support the PSU: it is heavy.");
+
+    case "install-psu-screws":
+      if (!s.psu.installed) return no("invalid", "Install the power supply first.");
+      if (s.psu.screws) return no("invalid", "The PSU's screws are already in.");
+      s.psu.screws = true;
+      return ok(s, "PSU fixed to the back of the case with its 4 screws.");
+
+    case "remove-psu": {
+      if (!s.psu.installed) return no("invalid", "The power supply is not installed.");
+      const attached = [
+        s.atx24 && "24-pin ATX",
+        s.eps8 && "8-pin CPU",
+        s.gpu.installed && s.gpu.power && "PCIe (graphics card)",
+        s.sata.installed && s.sata.power && "SATA power",
+      ].filter(Boolean);
+      if (attached.length) {
+        return no("forcing", `Its cables are still connected (${attached.join(", ")}). Pulling the PSU out would rip them from the parts. Disconnect every PSU cable first.`);
+      }
+      if (s.psu.screws) return no("forcing", "The screws at the back still hold the PSU to the case. Remove them first.");
+      s.psu.installed = false;
+      return ok(s, "PSU slid out of its bay and set on the mat. Never open a power supply: its capacitors can hold a dangerous charge.");
+    }
+
+    case "install-psu":
+      if (s.psu.installed) return no("invalid", "The power supply is already installed.");
+      s.psu = { installed: true, screws: false };
+      return ok(s, "PSU slid into the bay, fan facing the bottom vent. Now fit its screws and connect its cables.");
   }
 }
 
@@ -406,6 +547,27 @@ export function actionsFor(part: PartId, s: SimState): Action[] {
       return s.m2.installed
         ? [{ type: s.m2.screw ? "remove-m2-screw" : "install-m2-screw" }, { type: "remove-m2" }]
         : [{ type: s.m2.screw ? "remove-m2-screw" : "install-m2-screw" }, { type: "insert-m2" }];
+    case "atx-24pin":
+      return [{ type: s.atx24 ? "disconnect-atx24" : "connect-atx24" }];
+    case "eps-8pin":
+      return [{ type: s.eps8 ? "disconnect-eps8" : "connect-eps8" }];
+    case "sata-data":
+      return s.sata.installed ? [{ type: s.sata.data ? "disconnect-sata-data" : "connect-sata-data" }] : [];
+    case "sata-power":
+      return s.sata.installed ? [{ type: s.sata.power ? "disconnect-sata-power" : "connect-sata-power" }] : [];
+    case "sata-ssd":
+      return s.sata.installed
+        ? [
+            { type: s.sata.data ? "disconnect-sata-data" : "connect-sata-data" },
+            { type: s.sata.power ? "disconnect-sata-power" : "connect-sata-power" },
+            { type: s.sata.screws ? "remove-ssd-screws" : "install-ssd-screws" },
+            { type: "remove-ssd" },
+          ]
+        : [{ type: "insert-ssd" }];
+    case "psu":
+      return s.psu.installed
+        ? [{ type: s.psu.screws ? "remove-psu-screws" : "install-psu-screws" }, { type: "remove-psu" }]
+        : [{ type: "install-psu" }];
     default:
       return [];
   }
@@ -479,6 +641,38 @@ export function actionLabel(a: Action): string {
       return "Pull the drive out";
     case "insert-m2":
       return "Insert the drive at an angle";
+    case "disconnect-atx24":
+      return "Unplug the 24-pin ATX cable";
+    case "connect-atx24":
+      return "Plug in the 24-pin ATX cable";
+    case "disconnect-eps8":
+      return "Unplug the 8-pin CPU cable";
+    case "connect-eps8":
+      return "Plug in the 8-pin CPU cable";
+    case "disconnect-sata-data":
+      return "Unplug the SATA data cable";
+    case "connect-sata-data":
+      return "Plug in the SATA data cable";
+    case "disconnect-sata-power":
+      return "Unplug the SATA power cable";
+    case "connect-sata-power":
+      return "Plug in the SATA power cable";
+    case "remove-ssd-screws":
+      return "Remove the SSD's screws";
+    case "install-ssd-screws":
+      return "Fit the SSD's screws";
+    case "remove-ssd":
+      return "Lift the SSD out";
+    case "insert-ssd":
+      return "Put the SSD in its mount";
+    case "remove-psu-screws":
+      return "Remove the PSU's rear screws";
+    case "install-psu-screws":
+      return "Fit the PSU's rear screws";
+    case "remove-psu":
+      return "Slide the PSU out";
+    case "install-psu":
+      return "Slide the PSU into its bay";
     case "identify":
       return "Identify";
   }
@@ -500,6 +694,10 @@ export function isRemoved(part: PartId, s: SimState): boolean {
       return !s.m2.installed;
     case "side-panel":
       return !s.sidePanel;
+    case "sata-ssd":
+      return !s.sata.installed;
+    case "psu":
+      return !s.psu.installed;
     default:
       return false;
   }

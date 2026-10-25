@@ -27,6 +27,8 @@ type View = { kind: "lesson"; id: string } | { kind: "quiz"; id: string; lessonI
 function LearningLibraryPage() {
   const data = useLearning();
   const [tab, setTab] = useState<TabId>("library");
+  // A library lesson asked for a 3D demo: the lab opens playing it. `key` remounts the lab for each request.
+  const [labDemo, setLabDemo] = useState<{ id: string; key: number } | null>(null);
   const [view, setView] = useState<View>(null);
   const lessons = catalog.lessons;
 
@@ -44,6 +46,11 @@ function LearningLibraryPage() {
         onBack={() => setView(null)}
         onOpenLesson={(id) => setView({ kind: "lesson", id })}
         onTakeQuiz={(id) => setView({ kind: "quiz", id, lessonId: lesson.id })}
+        onWatchDemo={(id) => {
+          setView(null);
+          setTab("lab");
+          setLabDemo({ id, key: Date.now() });
+        }}
       />
     );
   }
@@ -76,7 +83,10 @@ function LearningLibraryPage() {
             type="button"
             role="tab"
             aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id);
+              setLabDemo(null);
+            }}
             className={`-mb-px cursor-pointer border-x-0 border-t-0 border-b-2 border-solid bg-transparent px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap transition-colors ${
               tab === t.id ? "border-[#2563eb] text-[#1d4ed8]" : "border-transparent text-[#5b6577] hover:text-[#172033]"
             }`}
@@ -91,7 +101,7 @@ function LearningLibraryPage() {
         {tab === "progress" && <ProgressTab lessons={lessons} data={data} onOpen={open} />}
         {tab === "lab" && (
           <Suspense fallback={<Spinner label="Loading the 3D Hardware Lab…" />}>
-            <HardwareLabPage data={data} onOpenLibraryLesson={open} />
+            <HardwareLabPage key={labDemo?.key ?? 0} data={data} onOpenLibraryLesson={open} autoDemo={labDemo?.id} />
           </Suspense>
         )}
       </div>

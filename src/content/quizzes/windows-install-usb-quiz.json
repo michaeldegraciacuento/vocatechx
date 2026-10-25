@@ -1,0 +1,42 @@
+{
+  "id": "windows-install-usb-quiz",
+  "lessonId": "windows-install-usb",
+  "title": "Windows 11 installation quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "multi",
+      "prompt": "Which are Windows 11 minimum requirements? Select all that apply.",
+      "choices": ["TPM 2.0", "4 GB RAM", "64 GB storage", "UEFI with Secure Boot capability", "A dedicated graphics card with 8 GB memory"],
+      "correct": [0, 1, 2, 3],
+      "explanation": "A DirectX 12 compatible graphics adapter is required, but integrated graphics are fine."
+    },
+    {
+      "kind": "order",
+      "prompt": "Put these installation steps in order.",
+      "items": ["Back up the customer's files", "Create the installation USB", "Boot from the USB using the boot menu", "Choose Custom: Install Windows only", "Run Windows Update and check Device Manager"],
+      "explanation": "Back up first, prepare the installer, boot it, install, then update and check drivers."
+    },
+    {
+      "kind": "single",
+      "prompt": "What is the minimum USB drive size for the Media Creation Tool?",
+      "choices": ["2 GB", "4 GB", "8 GB", "64 GB"],
+      "correct": 2,
+      "explanation": "The tool needs at least 8 GB and erases the drive."
+    },
+    {
+      "kind": "single",
+      "prompt": "PC Health Check says TPM is not found on a 2020 desktop. What should you do first?",
+      "choices": ["Buy a new motherboard", "Check whether TPM (fTPM/PTT) is disabled in the UEFI settings", "Use a modified installer", "Install Windows 10 instead"],
+      "correct": 1,
+      "explanation": "Firmware TPM is often present but switched off."
+    },
+    {
+      "kind": "single",
+      "prompt": "A customer asks you to use a free \"activator\" to activate Windows. What do you do?",
+      "choices": ["Use it if they insist", "Refuse: use a genuine licence, as activators are illegal and often contain malware", "Use it, then remove it", "Disable the antivirus first"],
+      "correct": 1,
+      "explanation": "Technicians only install genuine, licensed software."
+    }
+  ]
+}

@@ -14,8 +14,9 @@ rust-version = "1.90"
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-# The exe's manifest requires administrator rights, so Windows refuses to run
-# its (empty) test harness from a normal terminal. All tests live in the lib.
+# Release builds embed a manifest that requires administrator rights (see
+# build.rs), so Windows would refuse to run the (empty) binary test harness from
+# a normal terminal under `cargo test --release`. All tests live in the lib.
 [[bin]]
 name = "app"
 path = "src/main.rs"

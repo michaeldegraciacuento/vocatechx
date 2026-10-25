@@ -1,0 +1,42 @@
+{
+  "id": "make-utp-cable-quiz",
+  "lessonId": "make-utp-cable",
+  "title": "UTP cable quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "order",
+      "prompt": "Put the T568B colours in order, pin 1 to pin 8.",
+      "items": ["White-orange", "Orange", "White-green", "Blue", "White-blue", "Green", "White-brown", "Brown"],
+      "explanation": "This is the most common order used for straight-through cables."
+    },
+    {
+      "kind": "single",
+      "prompt": "A computer connects to a switch. Which cable do you make?",
+      "choices": ["Straight-through (T568B both ends)", "Crossover (T568A one end, T568B the other)", "Rollover", "Coaxial"],
+      "correct": 0,
+      "explanation": "Different device types use straight-through. Auto-MDIX also handles most other cases."
+    },
+    {
+      "kind": "single",
+      "prompt": "The cable tester shows light 3 on one end and light 6 on the other. What happened?",
+      "choices": ["The cable is fine", "Two wires are swapped on one end", "The cable is too long", "The tester battery is low"],
+      "correct": 1,
+      "explanation": "Lights out of order mean wires are crossed. Re-terminate that end."
+    },
+    {
+      "kind": "single",
+      "prompt": "Why must the outer jacket go inside the connector?",
+      "choices": ["For colour coding", "So the crimp grips it and protects the wires when the cable is pulled", "To make the cable faster", "It is not necessary"],
+      "correct": 1,
+      "explanation": "That strain relief stops the wires breaking off the contacts."
+    },
+    {
+      "kind": "single",
+      "prompt": "What is the maximum recommended length of one Ethernet cable run?",
+      "choices": ["10 m", "50 m", "100 m", "500 m"],
+      "correct": 2,
+      "explanation": "Cat5e and Cat6 Ethernet runs are specified up to 100 metres."
+    }
+  ]
+}

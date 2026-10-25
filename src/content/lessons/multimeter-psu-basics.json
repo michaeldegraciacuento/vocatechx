@@ -1,0 +1,74 @@
+{
+  "id": "multimeter-psu-basics",
+  "version": 1,
+  "title": "Multimeter basics and checking a power supply",
+  "description": "Use a multimeter safely to measure DC voltage and continuity, and check that a PSU's outputs are within tolerance.",
+  "category": "tools-diagnostics",
+  "difficulty": "intermediate",
+  "durationMin": 35,
+  "objectives": [
+    "Set up a multimeter for DC voltage and continuity.",
+    "Measure a CMOS battery and judge whether it needs replacing.",
+    "Read a PSU tester and know the ATX voltage tolerances.",
+    "Identify PSU wire colours by voltage."
+  ],
+  "prerequisites": ["esd-safety-basics", "technician-toolkit"],
+  "tools": ["Digital multimeter", "PSU tester", "CR2032 coin cell (CMOS battery)", "A known-good network or power cable for continuity practice"],
+  "safety": [
+    { "level": "danger", "text": "Never measure mains (220 V AC) wall sockets or anything inside a power supply as a trainee. Only measure low-voltage DC outputs." },
+    { "level": "warning", "text": "Check the meter is set to the right mode before touching anything. Measuring voltage in resistance or current mode can damage the meter." },
+    { "level": "caution", "text": "Never short a power supply's pins with a paperclip or wire to test it. Use a PSU tester." }
+  ],
+  "steps": [
+    {
+      "title": "Know the meter",
+      "body": "- **Black probe** always goes in **COM**.\n- **Red probe** goes in the **VΩ** socket for voltage, resistance and continuity (not the A/mA current sockets).\n- **DC voltage** is marked **V⎓** (a straight and dashed line). **AC voltage** is V~.\n- **Continuity** is the symbol that looks like a speaker or sound waves: the meter beeps when there is a connection."
+    },
+    {
+      "title": "Measure a CMOS battery",
+      "body": "1. Set the meter to **DC voltage**, the 20 V range if it is not auto-ranging.\n2. Touch the red probe to the battery's **+** side (the flat side with the writing) and the black probe to the **−** side.\n3. A new CR2032 reads about **3.0–3.3 V**.\n\nBelow about **2.8 V** it is getting weak. A weak CMOS battery makes the computer lose its date, time and BIOS settings when unplugged."
+    },
+    {
+      "title": "Test continuity",
+      "body": "With the cable **disconnected from everything**, set the meter to continuity and touch the probes to the two ends of the same wire. A beep means the wire is unbroken. No beep: the wire is broken or not connected.\n\nThis is how you find a broken wire in a cable."
+    },
+    {
+      "title": "Check a PSU with a PSU tester",
+      "body": "1. With the PSU **switched off and unplugged**, connect its 24-pin cable (and others) to the tester.\n2. Plug in and switch on the PSU.\n3. Read each voltage on the tester's display.\n\nATX power supplies must stay within **±5%** on the main outputs:\n\n| Output | Acceptable range |\n|---|---|\n| +12 V | 11.40–12.60 V |\n| +5 V | 4.75–5.25 V |\n| +3.3 V | 3.14–3.47 V |\n\nAny reading outside the range, or a missing output, means the PSU should be replaced."
+    },
+    {
+      "title": "Know the wire colours",
+      "body": "Standard ATX wire colours:\n\n- **Yellow:** +12 V\n- **Red:** +5 V\n- **Orange:** +3.3 V\n- **Black:** ground\n- **Purple:** +5 V standby (powered whenever the PSU is plugged in and switched on)\n- **Green:** PS_ON (turns the PSU on)\n- **Grey:** Power Good\n\nThe purple standby line is why the motherboard has power even when the computer is \"off\"."
+    }
+  ],
+  "expectedResults": [
+    "You can measure DC voltage and continuity with the correct meter settings.",
+    "You can say whether a CMOS battery or a PSU reading is acceptable."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Leaving the red probe in the current (A) socket.",
+      "why": "Measuring voltage there short-circuits through the meter and can blow its fuse or damage what you are testing.",
+      "fix": "Use the VΩ socket for voltage, and check the dial before measuring."
+    },
+    {
+      "mistake": "Testing continuity on a powered circuit.",
+      "why": "Continuity mode sends its own small current; a powered circuit can damage the meter and give false readings.",
+      "fix": "Disconnect power first."
+    },
+    {
+      "mistake": "Judging a PSU only by \"the fan spins\".",
+      "why": "A fan can spin while a voltage is out of tolerance, causing random crashes.",
+      "fix": "Measure each output against the ±5% range."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Where does the black probe go?", "answer": "In the COM socket, always." },
+    { "question": "What is the acceptable range for the +12 V output?", "answer": "11.40–12.60 V (±5%)." },
+    { "question": "Which wire colour carries +12 V?", "answer": "Yellow." }
+  ],
+  "quizId": "multimeter-psu-basics-quiz",
+  "references": ["Intel ATX power supply design guide: output voltage tolerances.", "Your multimeter's user manual."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

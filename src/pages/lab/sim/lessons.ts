@@ -28,6 +28,8 @@ export type LabLesson = {
   summary: string;
   /** Library lessons worth reading first. */
   prerequisites: string[];
+  /** Library lessons this lab demonstrates; they link to its "Watch it in 3D" demo. */
+  libraryLessons: string[];
   safety: string[];
   start: SimState;
   steps: LabStep[];
@@ -68,7 +70,7 @@ const PREPARE: LabStep[] = [
     instruction: "Remove the side panel.",
     expect: { type: "remove-side-panel" },
     highlight: ["side-panel"],
-    hint: "Select the side panel (or the case) and choose \"Remove the side panel\".",
+    hint: "Click the side panel's frame (or the case), or pick Side panel in the Parts list, then choose \"Remove the side panel\".",
   },
 ];
 
@@ -100,6 +102,7 @@ const identify = (part: PartId | PartId[], name: string, hint: string, explain: 
 export const LAB_LESSONS: LabLesson[] = [
   {
     id: "lab-identify-components",
+    libraryLessons: ["pc-major-components"],
     title: "Identify the major PC components",
     summary: "Find each main component in the case by clicking it, without removing anything.",
     prerequisites: ["pc-major-components"],
@@ -117,6 +120,7 @@ export const LAB_LESSONS: LabLesson[] = [
   },
   {
     id: "lab-ram",
+    libraryLessons: ["ram-remove-install", "esd-safety-basics"],
     title: "Remove and reinstall RAM",
     summary: "Release the clips, remove both modules, then reinstall them in the dual-channel slots.",
     prerequisites: ["esd-safety-basics", "ram-remove-install"],
@@ -199,6 +203,7 @@ export const LAB_LESSONS: LabLesson[] = [
   },
   {
     id: "lab-gpu",
+    libraryLessons: ["practical-pc-assembly"],
     title: "Remove a graphics card",
     summary: "Disconnect the power cable, remove the bracket screws, release the slot latch and lift the card out.",
     prerequisites: ["esd-safety-basics", "pc-major-components"],
@@ -240,6 +245,7 @@ export const LAB_LESSONS: LabLesson[] = [
   },
   {
     id: "lab-cooler",
+    libraryLessons: ["practical-pc-assembly"],
     title: "Remove and reinstall a CPU cooler",
     summary: "Unplug the fan, loosen the screws, lift the cooler, replace the thermal paste and reinstall it.",
     prerequisites: ["esd-safety-basics", "pc-major-components"],
@@ -310,6 +316,7 @@ export const LAB_LESSONS: LabLesson[] = [
   },
   {
     id: "lab-cpu",
+    libraryLessons: ["practical-pc-assembly"],
     title: "Remove and reinstall a CPU (LGA socket)",
     summary: "Take off the cooler, open the socket, lift the CPU out, and reinstall it correctly oriented.",
     prerequisites: ["esd-safety-basics", "pc-major-components"],
@@ -382,6 +389,7 @@ export const LAB_LESSONS: LabLesson[] = [
   },
   {
     id: "lab-m2",
+    libraryLessons: ["practical-pc-assembly"],
     title: "Install an M.2 SSD",
     summary: "Remove the standoff screw, insert the drive at an angle, and secure it flat.",
     prerequisites: ["esd-safety-basics", "pc-major-components"],
@@ -414,7 +422,149 @@ export const LAB_LESSONS: LabLesson[] = [
     ],
   },
   {
+    id: "lab-sata-ssd",
+    libraryLessons: ["practical-pc-assembly"],
+    title: "Remove and reinstall a 2.5-inch SATA SSD",
+    summary: "Disconnect the SATA data and power cables, unscrew the drive, take it out and put it back.",
+    prerequisites: ["esd-safety-basics", "pc-major-components"],
+    safety: [...SAFETY_BASICS, "Back up the data first if the drive is in use. Removing the wrong drive can make Windows fail to start."],
+    start: ASSEMBLED,
+    steps: [
+      ...PREPARE,
+      {
+        instruction: "Unplug the SATA data cable from the SSD.",
+        expect: { type: "disconnect-sata-data" },
+        highlight: ["sata-ssd", "sata-data"],
+        hint: "Select the SSD or its SATA data cable.",
+        mistakes: [{ match: { type: "remove-ssd" }, message: "The data cable is still connected. Pulling the drive would break its connector." }],
+        camera: "power",
+      },
+      {
+        instruction: "Unplug the SATA power cable.",
+        expect: { type: "disconnect-sata-power" },
+        highlight: ["sata-ssd", "sata-power"],
+        hint: "Select the SSD or its SATA power cable.",
+        mistakes: [{ match: { type: "remove-ssd" }, message: "The power cable is still connected. Unplug it first." }],
+      },
+      {
+        instruction: "Remove the screws holding the SSD.",
+        expect: { type: "remove-ssd-screws" },
+        highlight: ["sata-ssd"],
+        hint: "Select the SSD and remove its screws.",
+        mistakes: [{ match: { type: "remove-ssd" }, message: "The screws still hold the drive. Remove them first." }],
+      },
+      { instruction: "Lift the SSD out.", expect: { type: "remove-ssd" }, highlight: ["sata-ssd"], hint: "Select the SSD and lift it out.", camera: "bench" },
+      {
+        instruction: "Put the SSD back in its mount.",
+        expect: { type: "insert-ssd" },
+        highlight: ["sata-ssd"],
+        hint: "Select the SSD on the mat and put it in its mount.",
+        camera: "power",
+      },
+      { instruction: "Fit its screws.", expect: { type: "install-ssd-screws" }, highlight: ["sata-ssd"], hint: "Select the SSD." },
+      {
+        instruction: "Plug the SATA data cable back in.",
+        expect: { type: "connect-sata-data" },
+        highlight: ["sata-ssd", "sata-data"],
+        hint: "Select the SSD or the data cable.",
+      },
+      {
+        instruction: "Plug the SATA power cable back in.",
+        expect: { type: "connect-sata-power" },
+        highlight: ["sata-ssd", "sata-power"],
+        hint: "Select the SSD or the power cable.",
+        explain: "Both connectors have an L-shaped key, so they only fit one way.",
+      },
+      ...CLOSE_UP,
+    ],
+  },
+  {
+    id: "lab-psu",
+    libraryLessons: ["practical-pc-assembly", "multimeter-psu-basics"],
+    title: "Remove and reinstall a power supply",
+    summary: "Disconnect every PSU cable, remove the rear screws, slide the PSU out and install it again.",
+    prerequisites: ["esd-safety-basics", "pc-major-components"],
+    safety: [
+      ...SAFETY_BASICS,
+      "Never open a power supply. Its capacitors can hold a dangerous charge even when unplugged. A faulty PSU is replaced as a whole unit.",
+      "This PSU is non-modular: its cables are fixed to it, so every one must be unplugged from the parts before it can come out.",
+    ],
+    start: ASSEMBLED,
+    steps: [
+      ...PREPARE,
+      {
+        instruction: "Unplug the 24-pin ATX cable from the motherboard.",
+        expect: { type: "disconnect-atx24" },
+        highlight: ["atx-24pin"],
+        hint: "Select the 24-pin ATX connector on the board's front edge. Squeeze its latch while pulling.",
+        mistakes: [{ match: { type: "remove-psu" }, message: "The PSU's cables are still plugged into the parts. Disconnect each one first." }],
+        camera: "power",
+      },
+      {
+        instruction: "Unplug the 8-pin CPU (EPS) cable.",
+        expect: { type: "disconnect-eps8" },
+        highlight: ["eps-8pin"],
+        hint: "It is at the top-left corner of the motherboard.",
+        mistakes: [{ match: { type: "remove-psu" }, message: "The 8-pin CPU cable and others are still connected." }],
+        camera: "cpu",
+      },
+      {
+        instruction: "Unplug the PCIe power cable from the graphics card.",
+        expect: { type: "disconnect-gpu-power" },
+        highlight: ["pcie-power", "gpu"],
+        hint: "Select the PCIe power cable on the card's top edge.",
+        mistakes: [{ match: { type: "remove-psu" }, message: "The graphics card's PCIe cable is still connected." }],
+        camera: "gpu",
+      },
+      {
+        instruction: "Unplug the SATA power cable from the SSD.",
+        expect: { type: "disconnect-sata-power" },
+        highlight: ["sata-power", "sata-ssd"],
+        hint: "Select the SATA power cable at the SSD.",
+        mistakes: [{ match: { type: "remove-psu" }, message: "The SSD's SATA power cable is still connected." }],
+        camera: "power",
+      },
+      {
+        instruction: "Remove the PSU's 4 screws at the back of the case.",
+        expect: { type: "remove-psu-screws" },
+        highlight: ["psu"],
+        hint: "Select the power supply and remove its rear screws.",
+        mistakes: [{ match: { type: "remove-psu" }, message: "The rear screws still hold the PSU." }],
+      },
+      {
+        instruction: "Slide the PSU out of its bay.",
+        expect: { type: "remove-psu" },
+        highlight: ["psu"],
+        hint: "Select the power supply and slide it out.",
+        explain: "To replace a PSU, choose one with at least the same wattage and the connectors your parts need.",
+        camera: "bench",
+      },
+      {
+        instruction: "Slide the PSU back into its bay.",
+        expect: { type: "install-psu" },
+        highlight: ["psu"],
+        hint: "Select the power supply on the mat.",
+        mistakes: [{ match: { type: "connect-atx24" }, message: "Install the PSU first; the cables come from it." }],
+        camera: "power",
+      },
+      { instruction: "Fit its 4 rear screws.", expect: { type: "install-psu-screws" }, highlight: ["psu"], hint: "Select the power supply." },
+      { instruction: "Plug in the 24-pin ATX cable.", expect: { type: "connect-atx24" }, highlight: ["atx-24pin"], hint: "Select the 24-pin connector." },
+      {
+        instruction: "Plug in the 8-pin CPU cable.",
+        expect: { type: "connect-eps8" },
+        highlight: ["eps-8pin"],
+        hint: "Select the 8-pin CPU connector at the top left.",
+        explain: "Use the cable labelled CPU. A PCIe cable looks similar but is keyed differently: never force it.",
+        camera: "cpu",
+      },
+      { instruction: "Plug the PCIe cable into the graphics card.", expect: { type: "connect-gpu-power" }, highlight: ["pcie-power", "gpu"], hint: "Select the PCIe power cable.", camera: "gpu" },
+      { instruction: "Plug the SATA power cable into the SSD.", expect: { type: "connect-sata-power" }, highlight: ["sata-power", "sata-ssd"], hint: "Select the SATA power cable.", camera: "power" },
+      ...CLOSE_UP,
+    ],
+  },
+  {
     id: "lab-power-connectors",
+    libraryLessons: ["pc-major-components", "no-power-no-display", "practical-pc-assembly"],
     title: "Identify the motherboard power connectors",
     summary: "Find the main power cables and headers that every technician must recognise.",
     prerequisites: ["pc-major-components"],

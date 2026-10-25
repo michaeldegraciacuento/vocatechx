@@ -4,6 +4,8 @@ import type { SimState } from "../sim/engine";
 import { RAM_IDS, RAM_SLOTS, type PartId } from "../sim/parts";
 import {
   ATX24,
+  PSU_BAY,
+  SSD_MOUNT,
   BENCH,
   BOARD,
   CASE,
@@ -45,9 +47,17 @@ function Mat({ color, metal = 0.1, rough = 0.6, emissive, glow = 0, opacity, map
   );
 }
 
+/** Raycasting that never hits, so clicks pass through to what is behind. */
+const clickThrough = () => {};
+
+/**
+ * See-through surfaces (glass, the shroud window, translucent front panel,
+ * fan blades) let clicks pass through, so the part you can see behind them is
+ * the one you select, not the glass in front of it.
+ */
 function Box({ size, at, rot, ...mat }: { size: Vec3; at: Vec3; rot?: Vec3 } & MatProps) {
   return (
-    <mesh position={at} rotation={rot}>
+    <mesh position={at} rotation={rot} raycast={mat.opacity !== undefined ? clickThrough : undefined}>
       <boxGeometry args={size} />
       <Mat {...mat} />
     </mesh>
@@ -144,14 +154,16 @@ type Props = {
   state: SimState;
   exploded: boolean;
   hidePanels: boolean;
+  /** False while the Hand tool is active: parts ignore clicks and hovering. */
+  interactive: boolean;
   hl: (id: PartId) => Highlight;
   onSelect: (id: PartId) => void;
   onHover: (id: PartId | null) => void;
 };
 
-export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: Props) {
+export function PcModel({ state, exploded, hidePanels, interactive, hl, onSelect, onHover }: Props) {
   const sel = (id: PartId, children: ReactNode) => (
-    <Selectable id={id} highlight={hl(id)} onSelect={onSelect} onHover={onHover}>
+    <Selectable id={id} highlight={hl(id)} interactive={interactive} onSelect={onSelect} onHover={onHover}>
       {children}
     </Selectable>
   );
@@ -190,8 +202,16 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
     <Mover to={state.sidePanel ? add([0, 0, CASE.depth + 0.4], ex(EXPLODE.sidePanel)) : BENCH.sidePanel}>
       {(glassOn || !state.sidePanel) && (
         <>
+          {/* The pane lets clicks through to the parts behind it; the frame
+              and thumbscrews are what select the panel itself. */}
           <Box size={[w + 0.8, h + 0.8, 0.4]} at={[0, 0, 0]} color="#a9bdd1" metal={0.2} rough={0.05} opacity={0.14} />
-          <Box size={[w + 0.8, 0.6, 0.5]} at={[0, h / 2 + 0.4, 0]} color={C.case} />
+          <Box size={[w + 1.6, 1.2, 0.5]} at={[0, h / 2 + 0.7, 0]} color={C.case} />
+          <Box size={[w + 1.6, 1.2, 0.5]} at={[0, -h / 2 - 0.7, 0]} color={C.case} />
+          <Box size={[1.2, h + 1.6, 0.5]} at={[-w / 2 - 0.7, 0, 0]} color={C.case} />
+          <Box size={[1.2, h + 1.6, 0.5]} at={[w / 2 + 0.7, 0, 0]} color={C.case} />
+          {[h / 2 - 2, -h / 2 + 2].map((y) => (
+            <Cyl key={y} r={0.55} h={0.6} at={[-w / 2 - 0.7, y, 0.4]} rot={[Math.PI / 2, 0, 0]} color="#9aa3b0" metal={0.8} rough={0.3} />
+          ))}
         </>
       )}
     </Mover>,
@@ -316,7 +336,7 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
     const slot = state.ram[id].slot;
     const to = slot ? add(ramSlotPos(slot), add([0, 0, 0.55], ex(EXPLODE.ram))) : BENCH[id];
     return (
-      <Selectable key={id} id={id} highlight={hl(id)} onSelect={onSelect} onHover={onHover}>
+      <Selectable key={id} id={id} highlight={hl(id)} interactive={interactive} onSelect={onSelect} onHover={onHover}>
         <Mover to={to} lift={LIFT.ram} spin={state.ram[id].orientation === "aligned" ? 0 : Math.PI}>
           <Box size={[0.12, 13.3, 3.1]} at={[0, 0, 1.55]} color="#1f6f45" />
           <Box size={[0.62, 13.3, 2.9]} at={[0, 0, 1.95]} color="#15171b" metal={0.55} rough={0.35} />
@@ -361,10 +381,13 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
   const gpuPlugAt = add(PCIE_SLOT, [16, -1.6, 12.6]);
   const pciePower = sel(
     "pcie-power",
-    <Mover to={state.gpu.installed && state.gpu.power ? add(gpuPlugAt, ex(EXPLODE.gpu)) : add(gpuPlugAt, [2, 2.5, 4])}>
-      <Box size={[2.3, 1.1, 1.2]} at={[0, 0, 0]} color="#1f2937" />
-      <Box size={[1.6, 0.6, 9]} at={[0, -0.2, 4.2]} color="#111827" rot={[-0.2, 0, 0]} />
-    </Mover>,
+    // The PSU's cables leave with it (non-modular), so they vanish when it is out.
+    state.psu.installed && (
+      <Mover to={state.gpu.installed && state.gpu.power ? add(gpuPlugAt, ex(EXPLODE.gpu)) : add(gpuPlugAt, [2, 2.5, 4])}>
+        <Box size={[2.3, 1.1, 1.2]} at={[0, 0, 0]} color="#1f2937" />
+        <Box size={[1.6, 0.6, 9]} at={[0, -0.2, 4.2]} color="#111827" rot={[-0.2, 0, 0]} />
+      </Mover>
+    ),
   );
 
   // ---- M.2 drive ----------------------------------------------------------
@@ -384,24 +407,48 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
   const psu = sel(
     "psu",
     <group>
-      <Box size={[15, 8.6, 14]} at={[-14.5, -18.3, 8.5]} color="#17191d" metal={0.4} rough={0.5} />
-      <Label size={[8.4, 7.1]} at={[-14.5, -18.3, 15.51]} map={psuLabel()} rough={0.6} />
+      <Mover to={state.psu.installed ? PSU_BAY : BENCH.psu} lift={LIFT.psu}>
+        <Box size={[15, 8.6, 14]} at={[0, 0, 0]} color="#17191d" metal={0.4} rough={0.5} />
+        <Label size={[8.4, 7.1]} at={[0, 0, 7.01]} map={psuLabel()} rough={0.6} />
+        {/* Fan grille underneath and the power socket at the back */}
+        <Cyl r={5.2} h={0.1} at={[0, -4.32, 0]} color="#0b0c0f" />
+        <Box size={[0.2, 2.6, 3]} at={[-7.55, 0, 0]} color="#0b0c0f" />
+      </Mover>
+      {/* Four screws through the back of the case */}
+      {state.psu.installed &&
+        state.psu.screws &&
+        [
+          [-3, -5.5],
+          [-3, 5.5],
+          [3, -5.5],
+          [3, 5.5],
+        ].map(([dy, dz]) => (
+          <Cyl key={`${dy}${dz}`} r={0.35} h={0.5} at={[CASE.minX - 0.55, PSU_BAY[1] + dy, PSU_BAY[2] + dz]} rot={[0, 0, Math.PI / 2]} color="#e5e7eb" metal={0.9} rough={0.3} />
+        ))}
     </group>,
   );
   const atx = sel(
     "atx-24pin",
     <group>
       <Box size={[1.1, 5.3, 1.2]} at={[ATX24[0], ATX24[1], ATX24[2] + 0.6]} color="#f1f5f9" />
-      <Box size={[1.4, 5.0, 1.4]} at={[ATX24[0] + 0.2, ATX24[1], ATX24[2] + 1.8]} color="#0f172a" />
-      <Box size={[3.2, 3.6, 0.9]} at={[ATX24[0] + 2.2, ATX24[1], ATX24[2] + 1.6]} color="#0f172a" />
+      {state.psu.installed && (
+        <Mover to={state.atx24 ? ATX24 : add(ATX24, [3, -1, 4])}>
+          <Box size={[1.4, 5.0, 1.4]} at={[0.2, 0, 1.8]} color="#0f172a" />
+          <Box size={[3.2, 3.6, 0.9]} at={[2.2, 0, 1.6]} color="#0f172a" />
+        </Mover>
+      )}
     </group>,
   );
   const eps = sel(
     "eps-8pin",
     <group>
       <Box size={[2.2, 1.1, 1.2]} at={[EPS8[0], EPS8[1], EPS8[2] + 0.6]} color="#f1f5f9" />
-      <Box size={[2.0, 1.4, 1.4]} at={[EPS8[0], EPS8[1] + 0.2, EPS8[2] + 1.8]} color="#0f172a" />
-      <Box size={[1.4, 2.8, 1.2]} at={[EPS8[0], EPS8[1] + 2, EPS8[2] + 1.6]} color="#0f172a" />
+      {state.psu.installed && (
+        <Mover to={state.eps8 ? EPS8 : add(EPS8, [0, 2.5, 4])}>
+          <Box size={[2.0, 1.4, 1.4]} at={[0, 0.2, 1.8]} color="#0f172a" />
+          <Box size={[1.4, 2.8, 1.2]} at={[0, 2, 1.6]} color="#0f172a" />
+        </Mover>
+      )}
     </group>,
   );
   const fanConnected = state.cooler.installed && state.cooler.fan;
@@ -419,17 +466,39 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
   );
   const ssd = sel(
     "sata-ssd",
-    <group>
-      <Box size={[10, 0.7, 7]} at={[12, CASE.shroudTop + 0.6, 8]} color="#24272d" metal={0.5} rough={0.4} />
-      <Label size={[10, 7]} at={[12, CASE.shroudTop + 0.96, 8]} rot={FACE_UP} map={sataLabel()} rough={0.5} />
-    </group>,
+    <Mover to={state.sata.installed ? SSD_MOUNT : BENCH.sataSsd} lift={LIFT.ssd}>
+      <Box size={[10, 0.7, 7]} at={[0, 0, 0]} color="#24272d" metal={0.5} rough={0.4} />
+      <Label size={[10, 7]} at={[0, 0.36, 0]} rot={FACE_UP} map={sataLabel()} rough={0.5} />
+      {/* SATA power (wide) and data (narrow) sockets on the front edge */}
+      <Box size={[0.3, 0.45, 2.4]} at={[5.1, 0, -2]} color="#0b0c0f" />
+      <Box size={[0.3, 0.45, 1.2]} at={[5.1, 0, 1.1]} color="#0b0c0f" />
+      {state.sata.screws &&
+        [
+          [-3.8, -3.6],
+          [3.2, -3.6],
+          [-3.8, 3.6],
+          [3.2, 3.6],
+        ].map(([x, z]) => <Cyl key={`${x}${z}`} r={0.28} h={0.35} at={[x, 0, z]} rot={[Math.PI / 2, 0, 0]} color="#e5e7eb" metal={0.9} rough={0.3} />)}
+    </Mover>,
   );
+  // Cable plugs at the SSD's connectors: pulled back when unplugged.
+  const sataPowerAt = add(SSD_MOUNT, [5.6, 0, -2]);
+  const sataDataAt = add(SSD_MOUNT, [5.6, 0, 1.1]);
   const sataPower = sel(
     "sata-power",
-    <group>
-      <Box size={[0.8, 0.5, 2.6]} at={[17.4, CASE.shroudTop + 0.6, 6]} color="#0f172a" />
-      <Box size={[3.5, 0.15, 2.2]} at={[19.5, CASE.shroudTop + 0.4, 6]} color="#111827" />
-    </group>,
+    state.psu.installed && (
+      <Mover to={state.sata.installed && state.sata.power ? sataPowerAt : add(sataPowerAt, [2.6, 1.2, 0])}>
+        <Box size={[0.8, 0.55, 2.6]} at={[0, 0, 0]} color="#0f172a" />
+        <Box size={[3.5, 0.15, 2.2]} at={[2.1, -0.2, 0]} color="#111827" />
+      </Mover>
+    ),
+  );
+  const sataData = sel(
+    "sata-data",
+    <Mover to={state.sata.installed && state.sata.data ? sataDataAt : add(sataDataAt, [2.6, 1.6, 0.6])}>
+      <Box size={[0.8, 0.5, 1.3]} at={[0, 0, 0]} color="#b91c1c" />
+      <Box size={[4, 0.12, 0.8]} at={[2.3, 0.1, 0]} color="#dc2626" />
+    </Mover>,
   );
   const fans = sel(
     "front-fans",
@@ -461,7 +530,7 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
   );
   const strap = sel(
     "esd-strap",
-    <Mover to={state.esd ? [CASE.maxX + 3, -14, 21] : [MAT.x + 17, MAT.y + 0.6, MAT.z + 10]}>
+    <Mover to={state.esd ? [CASE.maxX + 3, -14, 21] : [MAT.x + 15, MAT.y + 0.6, MAT.z + 12]}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.6, 0.45, 10, 32]} />
         <Mat color="#2563eb" rough={0.7} />
@@ -484,6 +553,7 @@ export function PcModel({ state, exploded, hidePanels, hl, onSelect, onHover }: 
       {psu}
       {ssd}
       {sataPower}
+      {sataData}
       {atx}
       {eps}
       {fanHeader}

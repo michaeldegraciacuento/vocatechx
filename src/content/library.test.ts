@@ -25,9 +25,9 @@ describe("lesson search and filters", () => {
     expect(filterLessons(lessons, { ...EMPTY_FILTER, query: "WRIST strap" }, none, noProgress).map((l) => l.id)).toContain(
       "esd-safety-basics",
     );
-    expect(filterLessons(lessons, { ...EMPTY_FILTER, query: "dual-channel" }, none, noProgress).map((l) => l.id)).toEqual([
-      "ram-remove-install",
-    ]);
+    expect(filterLessons(lessons, { ...EMPTY_FILTER, query: "dual-channel" }, none, noProgress).map((l) => l.id)).toContain("ram-remove-install");
+    // Title matches rank first.
+    expect(filterLessons(lessons, { ...EMPTY_FILTER, query: "UTP cable" }, none, noProgress)[0].id).toBe("make-utp-cable");
     expect(filterLessons(lessons, { ...EMPTY_FILTER, query: "zzzz" }, none, noProgress)).toEqual([]);
   });
 

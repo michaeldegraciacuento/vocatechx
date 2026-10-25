@@ -1,0 +1,78 @@
+{
+  "id": "troubleshooting-process",
+  "version": 1,
+  "title": "The 6-step troubleshooting process",
+  "description": "A methodical way to find and fix any computer fault, so you test causes in a sensible order instead of guessing.",
+  "category": "pc-troubleshooting",
+  "difficulty": "beginner",
+  "durationMin": 25,
+  "objectives": [
+    "List the six steps of the troubleshooting process in order.",
+    "Gather information from the user and the computer before changing anything.",
+    "Test the simplest and most likely causes first.",
+    "Verify the fix and record what you did."
+  ],
+  "prerequisites": ["pc-major-components"],
+  "tools": ["Notebook or job sheet", "The customer's description of the problem"],
+  "safety": [
+    { "level": "caution", "text": "Back up the customer's data before any repair that could affect files, such as reinstalling Windows or replacing a drive." },
+    { "level": "warning", "text": "Unplug the computer and wear a grounded wrist strap before testing anything inside the case." }
+  ],
+  "steps": [
+    {
+      "title": "1. Identify the problem",
+      "body": "Ask the user open questions and listen:\n\n- What exactly happens, and what did you expect to happen?\n- When did it start? What changed just before (new software, an update, a move, a power cut)?\n- Can you show me?\n\nThen look for yourself: error messages, lights, beeps, and Windows tools like **Event Viewer** and **Device Manager**. Write everything down. Do not change anything yet."
+    },
+    {
+      "title": "2. Establish a theory of probable cause",
+      "body": "List the possible causes, then **question the obvious**. Start with the simplest and most likely:\n\n- Is it plugged in and switched on?\n- Is a cable loose?\n- Did a recent change cause it?\n\nOnly move to complex causes (a failed motherboard, for example) when the simple ones are ruled out."
+    },
+    {
+      "title": "3. Test the theory",
+      "body": "Test your most likely cause, for example by swapping a known-good cable or reseating a RAM module.\n\n- If the theory is **confirmed**, decide how to fix it.\n- If it is **not**, go back to step 2 with the next cause.\n\nChange **one thing at a time**, so you know which change made the difference."
+    },
+    {
+      "title": "4. Plan and carry out the fix",
+      "body": "Decide how to fix the cause and what effect the fix will have. Check you have the parts, the permission and a backup if needed, then carry it out. If the fix is beyond your authority or skill, escalate it to a senior technician."
+    },
+    {
+      "title": "5. Verify full system functionality",
+      "body": "Confirm the original problem is gone **and** that everything else still works. Ask the user to test it too.\n\nWhere it helps, add **preventive measures**: a surge protector, updated drivers, or advice to the user."
+    },
+    {
+      "title": "6. Document the findings",
+      "body": "Record the symptoms, the cause, what you did and the result on the job sheet or ticket. Good notes save time the next time the problem appears, on this computer or another one."
+    }
+  ],
+  "expectedResults": [
+    "You can name the six steps in order.",
+    "You test the simplest likely causes first and change one thing at a time.",
+    "Every job ends with verification and documentation."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Changing several things at once.",
+      "why": "If the problem disappears, you do not know which change fixed it, and you may have introduced a new problem.",
+      "fix": "Change one thing, test, then move to the next."
+    },
+    {
+      "mistake": "Skipping the questions and going straight to repairs.",
+      "why": "The user often knows what changed just before the fault, which points straight to the cause.",
+      "fix": "Always start by asking what happened and what changed."
+    },
+    {
+      "mistake": "Finishing without documenting.",
+      "why": "The next technician has to start from scratch, and repeat problems are hard to spot.",
+      "fix": "Write down the symptoms, cause, fix and result every time."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "What is the first step of the troubleshooting process?", "answer": "Identify the problem: question the user, observe the symptoms and gather information before changing anything." },
+    { "question": "Why change only one thing at a time?", "answer": "So you know exactly which change fixed (or caused) the problem." },
+    { "question": "What two things do you check in step 5?", "answer": "That the original problem is fixed and that the whole system still works, plus any preventive measures." }
+  ],
+  "quizId": "troubleshooting-process-quiz",
+  "references": ["CompTIA A+ troubleshooting methodology.", "TESDA Computer Systems Servicing NC II: diagnose and troubleshoot computer systems."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}

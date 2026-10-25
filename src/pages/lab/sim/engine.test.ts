@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { catalog } from "../../../content";
 import { actionsFor, apply, ASSEMBLED, unfinished, type Action, type SimState } from "./engine";
-import { LAB_LESSONS, type ActionMatch } from "./lessons";
+import { LAB_LESSONS, matches, type ActionMatch } from "./lessons";
 import { PARTS, type PartId } from "./parts";
-import { attempt, isComplete, startRun } from "./runner";
+import { attempt, demoPart, expectedAction, isComplete, startRun } from "./runner";
 
 /** Applies actions in order, failing the test with the engine's message if any is refused. */
 function run(state: SimState, actions: Action[]): SimState {
@@ -69,6 +69,31 @@ describe("forcing is never rewarded", () => {
     forcing(out, { type: "insert-cpu" });
   });
 
+  it("SSD: both cables and the screws must be released", () => {
+    forcing(opened, { type: "remove-ssd" });
+    forcing(run(opened, [{ type: "disconnect-sata-data" }]), { type: "remove-ssd" });
+    const loose = run(opened, [{ type: "disconnect-sata-data" }, { type: "disconnect-sata-power" }]);
+    forcing(loose, { type: "remove-ssd" });
+    expect(apply(run(loose, [{ type: "remove-ssd-screws" }]), { type: "remove-ssd" }).ok).toBe(true);
+  });
+
+  it("PSU: refuses while any of its cables is still attached, and names them", () => {
+    const r = apply(run(opened, [{ type: "remove-psu-screws" }]), { type: "remove-psu" });
+    expect(r).toMatchObject({ ok: false, kind: "forcing" });
+    if (!r.ok) for (const name of ["24-pin", "8-pin CPU", "PCIe", "SATA power"]) expect(r.message).toContain(name);
+
+    const unplugged = run(opened, [
+      { type: "disconnect-atx24" },
+      { type: "disconnect-eps8" },
+      { type: "disconnect-gpu-power" },
+      { type: "disconnect-sata-power" },
+    ]);
+    forcing(unplugged, { type: "remove-psu" });
+    const out = run(unplugged, [{ type: "remove-psu-screws" }, { type: "remove-psu" }]);
+    // Its cables come with it, so nothing can be plugged in until it is back.
+    expect(apply(out, { type: "connect-atx24" })).toMatchObject({ ok: false, kind: "order" });
+  });
+
   it("never installs a cooler without fresh paste", () => {
     const old = run(opened, [{ type: "disconnect-cooler-fan" }, { type: "loosen-cooler-screws" }, { type: "remove-cooler" }]);
     expect(apply(old, { type: "install-cooler" })).toMatchObject({ ok: false });
@@ -97,6 +122,59 @@ describe("guided lessons", () => {
         expect(tried.run.sim).toEqual(r.sim);
       }
       r = attempt(r, toAction(step.expect)).run;
+    }
+  });
+
+  // QA: a step is only doable if the UI offers its action. The learner sees
+  // actions on the selected part's card, so a part the step highlights (or,
+  // for "find it" steps, the part itself) must list exactly that action.
+  it.each(LAB_LESSONS.map((l) => [l.id, l] as const))("%s: every step can be done from the part cards", (_, lesson) => {
+    let r = startRun(lesson, 0);
+    lesson.steps.forEach((step, i) => {
+      const label = `step ${i + 1} "${step.instruction}"`;
+      if (step.expect.type === "identify") {
+        const parts = Array.isArray(step.expect.part) ? step.expect.part : [step.expect.part!];
+        for (const p of parts) expect(PARTS[p], label).toBeDefined();
+        expect(step.highlight, `${label}: "find it" steps must not give the answer away`).toEqual([]);
+      } else {
+        expect(step.highlight.length, `${label}: highlights nothing`).toBeGreaterThan(0);
+        const offered = step.highlight.some((part) => actionsFor(part, r.sim).some((a) => matches(step.expect, a)));
+        expect(offered, `${label}: none of ${step.highlight.join(", ")} offers ${step.expect.type}`).toBe(true);
+      }
+      r = attempt(r, toAction(step.expect)).run;
+    });
+  });
+
+  it("selecting a part during a non-'find it' step never counts as a mistake", () => {
+    const lesson = LAB_LESSONS.find((l) => l.id === "lab-ram")!;
+    let r = startRun(lesson, 0);
+    for (const part of Object.keys(PARTS) as PartId[]) {
+      const next = attempt(r, { type: "identify", part });
+      expect(next.feedback).toBeNull();
+      r = next.run;
+    }
+    expect(r.mistakes).toBe(0);
+  });
+
+  it.each(LAB_LESSONS.map((l) => [l.id, l] as const))("%s: the demo plays every step successfully", (_, lesson) => {
+    let r = startRun(lesson, 0);
+    for (const step of lesson.steps) {
+      const part = demoPart(step, r.sim);
+      expect(part, step.instruction).not.toBeNull();
+      // The part the demo selects must offer the action it is about to perform.
+      if (step.expect.type !== "identify") expect(actionsFor(part!, r.sim).some((a) => matches(step.expect, a)), step.instruction).toBe(true);
+      const next = attempt(r, expectedAction(step));
+      expect(next.feedback?.tone, `${step.instruction}: ${next.feedback?.message}`).toBe("success");
+      r = next.run;
+    }
+    expect(isComplete(r)).toBe(true);
+  });
+
+  it("every lab lesson demonstrates at least one library lesson that exists", () => {
+    const ids = new Set(catalog.lessons.map((l) => l.id));
+    for (const lesson of LAB_LESSONS) {
+      expect(lesson.libraryLessons.length, lesson.id).toBeGreaterThan(0);
+      for (const id of lesson.libraryLessons) expect(ids.has(id), `${lesson.id} → ${id}`).toBe(true);
     }
   });
 

@@ -1,0 +1,50 @@
+{
+  "id": "practical-pc-assembly-quiz",
+  "lessonId": "practical-pc-assembly",
+  "title": "PC assembly assessment quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "order",
+      "prompt": "Put the assembly stages in order.",
+      "items": [
+        "Prepare the workspace and ground yourself",
+        "Install CPU, M.2, RAM and cooler on the motherboard",
+        "Fit standoffs, I/O shield and PSU in the case",
+        "Install the motherboard and drives",
+        "Install the graphics card",
+        "Connect all cables",
+        "Power on and check the UEFI"
+      ],
+      "explanation": "Building the board outside the case first is easier and safer."
+    },
+    {
+      "kind": "single",
+      "prompt": "The fans spin but there is no display, and you see the 8-pin CPU header is empty. What is wrong?",
+      "choices": ["The CPU has no power", "The RAM is faulty", "The monitor is broken", "Windows is missing"],
+      "correct": 0,
+      "explanation": "Without the 8-pin EPS cable, the CPU does not get power."
+    },
+    {
+      "kind": "single",
+      "prompt": "Why match the standoffs to the motherboard's holes?",
+      "choices": ["To improve airflow", "An extra standoff can short the back of the board", "To fit more RAM", "It does not matter"],
+      "correct": 1,
+      "explanation": "Metal standoffs under the board where there is no hole can cause short circuits."
+    },
+    {
+      "kind": "multi",
+      "prompt": "What should you check in the UEFI after the first start? Select all that apply.",
+      "choices": ["The CPU is detected", "All the RAM is detected", "The drives are listed", "The Windows wallpaper"],
+      "correct": [0, 1, 2],
+      "explanation": "The UEFI confirms the hardware works before installing the operating system."
+    },
+    {
+      "kind": "single",
+      "prompt": "The power button works but the case's power light does not. What is the likely cause?",
+      "choices": ["The PSU is failing", "The power LED wires are reversed on the front-panel header", "The CPU is not seated", "The SSD is missing"],
+      "correct": 1,
+      "explanation": "LEDs are polarised; swap + and −."
+    }
+  ]
+}

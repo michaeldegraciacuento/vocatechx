@@ -1,0 +1,47 @@
+{
+  "id": "printer-troubleshooting-quiz",
+  "lessonId": "printer-troubleshooting",
+  "title": "Printer troubleshooting quiz",
+  "passPercent": 80,
+  "questions": [
+    {
+      "kind": "order",
+      "prompt": "Put the laser printing process in order.",
+      "items": ["Processing", "Charging", "Exposing", "Developing", "Transferring", "Fusing", "Cleaning"],
+      "explanation": "Knowing the order helps you link a print fault to the part that causes it."
+    },
+    {
+      "kind": "single",
+      "prompt": "Jobs are stuck in the queue and will not cancel. What should you do?",
+      "choices": ["Reinstall Windows", "Restart the Print Spooler service", "Replace the printer", "Delete the spool folder"],
+      "correct": 1,
+      "explanation": "Restarting the Spooler usually clears stuck jobs. Only delete the job files inside the folder if needed."
+    },
+    {
+      "kind": "single",
+      "prompt": "Printed pages smudge when touched. Which part is most likely at fault?",
+      "choices": ["The laser", "The fuser", "The paper tray", "The network card"],
+      "correct": 1,
+      "explanation": "The fuser melts toner onto the paper; if it fails, toner does not bond."
+    },
+    {
+      "kind": "multi",
+      "prompt": "How should you clear a paper jam? Select all that apply.",
+      "choices": [
+        "Turn the printer off and let it cool",
+        "Pull the paper slowly in its normal direction",
+        "Use both hands so it does not tear",
+        "Pull hard while the printer is running"
+      ],
+      "correct": [0, 1, 2],
+      "explanation": "The fuser is hot and moving parts are dangerous while it runs."
+    },
+    {
+      "kind": "single",
+      "prompt": "Where should you get a printer driver?",
+      "choices": ["Any driver download site", "The printer maker's website", "A USB drive from a friend", "A torrent"],
+      "correct": 1,
+      "explanation": "Official drivers match the model and are free of malware."
+    }
+  ]
+}

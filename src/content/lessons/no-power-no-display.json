@@ -1,0 +1,77 @@
+{
+  "id": "no-power-no-display",
+  "version": 1,
+  "title": "Troubleshoot \"no power\" and \"no display\"",
+  "description": "Work through the most common startup faults: a computer that does not turn on, and one that turns on but shows nothing on screen.",
+  "category": "pc-troubleshooting",
+  "difficulty": "intermediate",
+  "durationMin": 35,
+  "objectives": [
+    "Tell \"no power\" apart from \"power but no display\".",
+    "Check power from the wall outlet to the motherboard in order.",
+    "Use beep codes and motherboard debug LEDs to narrow down a fault.",
+    "Test with a minimal configuration."
+  ],
+  "prerequisites": ["esd-safety-basics", "troubleshooting-process"],
+  "tools": ["Known-good power cord and monitor cable", "Anti-static wrist strap", "Motherboard manual", "PSU tester (optional)"],
+  "safety": [
+    { "level": "danger", "text": "Never open the power supply. If you suspect it, test it with a PSU tester or replace it." },
+    { "level": "warning", "text": "Unplug the computer and wear a wrist strap before reseating any component." }
+  ],
+  "steps": [
+    {
+      "title": "Decide which symptom you have",
+      "body": "- **No power:** no fans, no lights, nothing happens when you press the power button.\n- **Power but no display:** fans spin and lights come on, but the monitor stays black or shows \"No signal\".\n\nThey have different causes, so decide first."
+    },
+    {
+      "title": "No power: check from the wall inward",
+      "body": "1. Is the outlet or extension working? Test it with another device.\n2. Is the power cord firmly in? Try a known-good cord.\n3. Is the switch on the back of the PSU set to **I** (on)?\n4. With the case open, is the motherboard's standby LED lit? If not, power is not reaching the board.\n5. Are the **24-pin** and **8-pin CPU** cables fully seated?\n6. Is the front-panel power switch cable on the right header pins (PWR_SW)? Check the manual."
+    },
+    {
+      "title": "No power: test the power supply",
+      "body": "Connect the PSU to a **PSU tester** and read the voltages. If the tester shows faults or no output, replace the PSU.\n\nIf the PSU tests fine, the fault may be the power button, its cable, or the motherboard."
+    },
+    {
+      "title": "No display: check the simple things",
+      "body": "1. Is the monitor on and set to the right **input** (HDMI, DisplayPort)?\n2. Try a known-good cable.\n3. If there is a **graphics card**, is the cable plugged into the card and not the motherboard?\n4. Does the graphics card have its PCIe power cable connected?"
+    },
+    {
+      "title": "Read beep codes and debug LEDs",
+      "body": "Many motherboards report startup faults:\n\n- **Beep codes:** a pattern of beeps from a small speaker. Patterns differ between BIOS makers, so look them up in the motherboard manual.\n- **Debug LEDs (Q-LEDs):** small lights labelled **CPU**, **DRAM**, **VGA** and **BOOT**. The one that stays lit shows where startup stopped.\n\nA DRAM light usually points to memory; VGA to the graphics card or monitor connection."
+    },
+    {
+      "title": "Reseat and test with a minimal configuration",
+      "body": "With the computer unplugged and you grounded:\n\n1. Reseat the RAM, one module at a time in the slot the manual recommends.\n2. Disconnect everything not needed to start: extra drives, USB devices, extra cards.\n3. Start with only the CPU, cooler, one RAM module and graphics (or onboard video).\n\nIf it now starts, add parts back one at a time until the fault returns. The last part added is the suspect."
+    }
+  ],
+  "expectedResults": [
+    "You can tell the two symptoms apart and follow the right checks.",
+    "You narrow the fault down to one component by testing, not guessing."
+  ],
+  "commonMistakes": [
+    {
+      "mistake": "Plugging the monitor into the motherboard when a graphics card is installed.",
+      "why": "Most boards turn off onboard video when a card is present, so the screen stays black.",
+      "fix": "Connect the monitor to the graphics card."
+    },
+    {
+      "mistake": "Assuming one beep pattern means the same thing on every computer.",
+      "why": "AMI, Award, Phoenix and others use different codes.",
+      "fix": "Look up the pattern in that motherboard's manual."
+    },
+    {
+      "mistake": "Replacing the motherboard first.",
+      "why": "It is the most expensive and slowest part to replace, and usually not the cause.",
+      "fix": "Rule out power, cables, RAM and graphics first."
+    }
+  ],
+  "knowledgeChecks": [
+    { "question": "Fans spin but the screen says \"No signal\". Is this a no-power fault?", "answer": "No. The computer has power; it is a no-display fault. Check the monitor input, cable, where it is plugged in, RAM and graphics." },
+    { "question": "Which debug LED would you expect after a badly seated RAM module?", "answer": "The DRAM LED." },
+    { "question": "What is a minimal configuration?", "answer": "Only the parts needed to start: CPU, cooler, one RAM module, graphics and the PSU." }
+  ],
+  "quizId": "no-power-no-display-quiz",
+  "references": ["Your motherboard manual: beep codes and debug LED sections."],
+  "reviewed": false,
+  "reviewNote": "Drafted with VocaTechX; awaiting review by a CSS instructor."
+}
